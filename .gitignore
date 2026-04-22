@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+.env
+.env.local
+.env.*.local
+vite-dev.err.log
+vite-dev.log
+vite-dev*.log
+_Pg.txt
+_Tg.txt
+_gg_extract.txt
