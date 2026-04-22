@@ -2,14 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- This CSP meta tag allows Vite to use eval() for hot-reloading in development -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Diocese of Calbayog Admin Dashboard</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/dist/favicon.svg" />
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body style="margin: 0; padding: 0; overflow: hidden; background: #0d1626">
+    <!--
+      Production + Vercel: static shell only (no /src/*.jsx — static hosts serve .jsx as text/jsx and modules fail).
+      Local dev: run `npm run dev` — Vite serves this file; the iframe loads /dist/index.html.
+    -->
+    <iframe
+      title="Diocese of Calbayog Dashboard"
+      src="/dist/index.html"
+      style="width: 100vw; height: 100vh; border: none; display: block; background: #ffffff"
+    ></iframe>
   </body>
 </html>

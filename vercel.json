@@ -3,6 +3,5 @@
   "framework": null,
   "installCommand": "echo 'Skipping install — site is prebuilt under dist/'",
   "buildCommand": "true",
-  "outputDirectory": ".",
-  "rewrites": [{ "source": "/", "destination": "/shell.html" }]
+  "outputDirectory": "."
 }

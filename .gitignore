@@ -9,3 +9,5 @@ vite-dev*.log
 _Pg.txt
 _Tg.txt
 _gg_extract.txt
+
+.vercel
