@@ -163,8 +163,6 @@ begin
         when not exists (select 1 from pg_tables where schemaname='public' and tablename='registered_users') then 0
         when exists (select 1 from information_schema.columns where table_schema='public' and table_name='registered_users' and column_name='parish_id')
           then (select count(*) from public.registered_users ru where ru.parish_id = v_parish.id)
-        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='registered_users' and column_name='parish_name')
-          then (select count(*) from public.registered_users ru where public.__parish_name_match(ru.parish_name, v_parish.parish_name))
         else 0
       end
     )::bigint,

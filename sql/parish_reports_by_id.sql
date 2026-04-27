@@ -45,32 +45,48 @@ begin
 
   return query
   select
-    -- Bookings this month (parish_id first, fall back to parish_name
-    -- to include older rows that haven't been backfilled yet).
+    -- Bookings this month (parish_id only when available).
     (
-      select count(*) from public.diocese_service_bookings b
-       where b.created_at >= v_first_of_month
-         and (
-           b.parish_id = v_parish.id
-           or (b.parish_id is null and lower(btrim(coalesce(b.parish_name,''))) = lower(btrim(v_parish.parish_name)))
-         )
+      case
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id'
+        )
+        then (
+          select count(*) from public.diocese_service_bookings b
+           where b.created_at >= v_first_of_month
+             and b.parish_id = v_parish.id
+        )
+        else (
+          select count(*) from public.diocese_service_bookings b
+           where b.created_at >= v_first_of_month
+             and lower(btrim(coalesce(b.parish_name,''))) = lower(btrim(v_parish.parish_name))
+        )
+      end
     )::bigint,
 
-    -- Pending bookings for this parish.
+    -- Pending bookings for this parish (parish_id only when available).
     (
-      select count(*) from public.diocese_service_bookings b
-       where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review')
-         and (
-           b.parish_id = v_parish.id
-           or (b.parish_id is null and lower(btrim(coalesce(b.parish_name,''))) = lower(btrim(v_parish.parish_name)))
-         )
+      case
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id'
+        )
+        then (
+          select count(*) from public.diocese_service_bookings b
+           where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review')
+             and b.parish_id = v_parish.id
+        )
+        else (
+          select count(*) from public.diocese_service_bookings b
+           where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review')
+             and lower(btrim(coalesce(b.parish_name,''))) = lower(btrim(v_parish.parish_name))
+        )
+      end
     )::bigint,
 
-    -- Registered members linked to this parish.
+    -- Registered members linked to this parish (parish_id only).
     (
-      -- Registered members linked to this parish.
-      -- Use parish_id when present. Legacy deployments might have only parish_name;
-      -- guard against missing columns to avoid 500s.
       case
         when exists (
           select 1 from information_schema.columns
@@ -81,16 +97,6 @@ begin
         then (
           select count(*) from public.registered_users ru
            where ru.parish_id = v_parish.id
-        )
-        when exists (
-          select 1 from information_schema.columns
-           where table_schema='public'
-             and table_name='registered_users'
-             and column_name='parish_name'
-        )
-        then (
-          select count(*) from public.registered_users ru
-           where lower(btrim(coalesce(ru.parish_name,''))) = lower(btrim(v_parish.parish_name))
         )
         else 0
       end
