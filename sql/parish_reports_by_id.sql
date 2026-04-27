@@ -68,18 +68,31 @@ begin
 
     -- Registered members linked to this parish.
     (
-      case when exists (select 1 from information_schema.columns
-                         where table_schema='public' and table_name='registered_users'
-                           and column_name='parish_id')
-           then (
-             select count(*) from public.registered_users ru
-              where ru.parish_id = v_parish.id
-                 or (ru.parish_id is null and lower(btrim(coalesce(ru.parish_name,''))) = lower(btrim(v_parish.parish_name)))
-           )
-           else (
-             select count(*) from public.registered_users ru
-              where lower(btrim(coalesce(ru.parish_name,''))) = lower(btrim(v_parish.parish_name))
-           )
+      -- Registered members linked to this parish.
+      -- Use parish_id when present. Legacy deployments might have only parish_name;
+      -- guard against missing columns to avoid 500s.
+      case
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public'
+             and table_name='registered_users'
+             and column_name='parish_id'
+        )
+        then (
+          select count(*) from public.registered_users ru
+           where ru.parish_id = v_parish.id
+        )
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public'
+             and table_name='registered_users'
+             and column_name='parish_name'
+        )
+        then (
+          select count(*) from public.registered_users ru
+           where lower(btrim(coalesce(ru.parish_name,''))) = lower(btrim(v_parish.parish_name))
+        )
+        else 0
       end
     )::bigint,
 

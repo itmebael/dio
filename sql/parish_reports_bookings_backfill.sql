@@ -117,109 +117,124 @@ begin
 
   return query
   select
-    -- Month bookings: scope by parish_id OR tolerant parish_name match.
+    -- Month bookings: scope by parish_id when present, else parish_name match.
     (
-      select count(*) from public.diocese_service_bookings b
-       where b.created_at >= v_first_of_month
-         and (
-           b.parish_id = v_parish.id
-           or public.__parish_name_match(b.parish_name, v_parish.parish_name)
-         )
+      case
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id'
+        )
+        then (
+          select count(*) from public.diocese_service_bookings b
+           where b.created_at >= v_first_of_month
+             and (b.parish_id = v_parish.id or public.__parish_name_match(b.parish_name, v_parish.parish_name))
+        )
+        else (
+          select count(*) from public.diocese_service_bookings b
+           where b.created_at >= v_first_of_month
+             and public.__parish_name_match(b.parish_name, v_parish.parish_name)
+        )
+      end
     )::bigint,
 
     -- Pending bookings.
     (
-      select count(*) from public.diocese_service_bookings b
-       where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review','correction')
-         and (
-           b.parish_id = v_parish.id
-           or public.__parish_name_match(b.parish_name, v_parish.parish_name)
-         )
+      case
+        when exists (
+          select 1 from information_schema.columns
+           where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id'
+        )
+        then (
+          select count(*) from public.diocese_service_bookings b
+           where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review','correction')
+             and (b.parish_id = v_parish.id or public.__parish_name_match(b.parish_name, v_parish.parish_name))
+        )
+        else (
+          select count(*) from public.diocese_service_bookings b
+           where lower(coalesce(b.booking_status,'')) in ('pending','pending review','awaiting review','for review','correction')
+             and public.__parish_name_match(b.parish_name, v_parish.parish_name)
+        )
+      end
     )::bigint,
 
     -- Members.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='registered_users')
-           then (
-             select count(*) from public.registered_users ru
-              where ru.parish_id = v_parish.id
-                 or public.__parish_name_match(ru.parish_name, v_parish.parish_name)
-           )
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='registered_users') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='registered_users' and column_name='parish_id')
+          then (select count(*) from public.registered_users ru where ru.parish_id = v_parish.id)
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='registered_users' and column_name='parish_name')
+          then (select count(*) from public.registered_users ru where public.__parish_name_match(ru.parish_name, v_parish.parish_name))
+        else 0
       end
     )::bigint,
 
     -- Events.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='parish_events')
-           then (
-             select count(*) from public.parish_events e
-              where e.parish_id = v_parish.id
-                 or public.__parish_name_match(e.parish_name, v_parish.parish_name)
-           )
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='parish_events') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='parish_events' and column_name='parish_id')
+          then (select count(*) from public.parish_events e where e.parish_id = v_parish.id or public.__parish_name_match(e.parish_name, v_parish.parish_name))
+        else (select count(*) from public.parish_events e where public.__parish_name_match(e.parish_name, v_parish.parish_name))
       end
     )::bigint,
 
     -- Announcements.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='diocese_announcements')
-           then (
-             select count(*) from public.diocese_announcements a
-              where a.parish_id = v_parish.id
-                 or public.__parish_name_match(a.parish_name, v_parish.parish_name)
-           )
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='diocese_announcements') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='diocese_announcements' and column_name='parish_id')
+          then (select count(*) from public.diocese_announcements a where a.parish_id = v_parish.id or public.__parish_name_match(a.parish_name, v_parish.parish_name))
+        else (select count(*) from public.diocese_announcements a where public.__parish_name_match(a.parish_name, v_parish.parish_name))
       end
     )::bigint,
 
     -- Archive records.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='diocese_archive_records')
-           then (
-             select count(*) from public.diocese_archive_records r
-              where r.parish_id = v_parish.id
-                 or public.__parish_name_match(r.church, v_parish.parish_name)
-           )
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='diocese_archive_records') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='diocese_archive_records' and column_name='parish_id')
+          then (select count(*) from public.diocese_archive_records r where r.parish_id = v_parish.id or public.__parish_name_match(r.church, v_parish.parish_name))
+        else (select count(*) from public.diocese_archive_records r where public.__parish_name_match(r.church, v_parish.parish_name))
       end
     )::bigint,
 
     -- Chapels.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='parish_chapels')
-           then (select count(*) from public.parish_chapels c where c.parish_id = v_parish.id)
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='parish_chapels') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='parish_chapels' and column_name='parish_id')
+          then (select count(*) from public.parish_chapels c where c.parish_id = v_parish.id)
+        else 0
       end
     )::bigint,
 
     -- Live streams.
     (
-      case when exists (select 1 from pg_tables where schemaname='public' and tablename='parish_live_streams')
-           then (
-             select count(*) from public.parish_live_streams s
-              where s.parish_id = v_parish.id
-                 or public.__parish_name_match(s.parish_name, v_parish.parish_name)
-           )
-           else 0
+      case
+        when not exists (select 1 from pg_tables where schemaname='public' and tablename='parish_live_streams') then 0
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='parish_live_streams' and column_name='parish_id')
+          then (select count(*) from public.parish_live_streams s where s.parish_id = v_parish.id or public.__parish_name_match(s.parish_name, v_parish.parish_name))
+        else (select count(*) from public.parish_live_streams s where public.__parish_name_match(s.parish_name, v_parish.parish_name))
       end
     )::bigint,
 
     -- All-time bookings.
     (
-      select count(*) from public.diocese_service_bookings b
-       where b.parish_id = v_parish.id
-          or public.__parish_name_match(b.parish_name, v_parish.parish_name)
+      case
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id')
+          then (select count(*) from public.diocese_service_bookings b where b.parish_id = v_parish.id or public.__parish_name_match(b.parish_name, v_parish.parish_name))
+        else (select count(*) from public.diocese_service_bookings b where public.__parish_name_match(b.parish_name, v_parish.parish_name))
+      end
     )::bigint,
 
     -- Completed bookings.
     (
-      select count(*) from public.diocese_service_bookings b
-       where lower(coalesce(b.booking_status,'')) in ('completed','done','released')
-         and (
-           b.parish_id = v_parish.id
-           or public.__parish_name_match(b.parish_name, v_parish.parish_name)
-         )
+      case
+        when exists (select 1 from information_schema.columns where table_schema='public' and table_name='diocese_service_bookings' and column_name='parish_id')
+          then (select count(*) from public.diocese_service_bookings b where lower(coalesce(b.booking_status,'')) in ('completed','done','released') and (b.parish_id = v_parish.id or public.__parish_name_match(b.parish_name, v_parish.parish_name)))
+        else (select count(*) from public.diocese_service_bookings b where lower(coalesce(b.booking_status,'')) in ('completed','done','released') and public.__parish_name_match(b.parish_name, v_parish.parish_name))
+      end
     )::bigint;
 end;
 $$;

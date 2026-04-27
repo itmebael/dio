@@ -43,6 +43,10 @@
         function isUserHashRoute() {
           var h = (location.hash || "").replace(/^#/, "").toLowerCase();
           if (!h || h === "login") return false;
+          // Diocese/parish routes can sometimes share a "user-*" hash name in
+          // older builds. Never force light mode for staff roles.
+          var r = sessionRole();
+          if (r === "diocese" || r === "parish") return false;
           return /^user-/.test(h) || h === "user-correction";
         }
         function isUserDashboard() {
@@ -92,9 +96,9 @@
         } catch (e) {}
       })();
     </script>
-    <script type="module" crossorigin src="/dist/assets/index-v20260422157000.js?v=live-fresh-120s"></script>
+    <script type="module" crossorigin src="/dist/assets/index-v20260422157000.js?v=reports-center-analytics-20260427-12"></script>
     <link rel="stylesheet" crossorigin href="/dist/assets/index-yReDnWMe.css">
-    <link rel="stylesheet" href="/dist/assets/sidebar-brand-responsive.css">
+    <link rel="stylesheet" href="/dist/assets/sidebar-brand-responsive.css?v=notification-dark-1">
     <style id="senior-friendly-theme">
       /* =========================================================
          Senior-friendly theme.
@@ -365,7 +369,8 @@
         color: #ffffff !important;
       }
 
-      html[data-theme="dark"] *:not(.pch-wrap):not(.pch-wrap *):not(.pch-dialog):not(.pch-dialog *):not(.pdm-widget):not(.pdm-widget *):not(.ucs-wrap):not(.ucs-wrap *):not(.plh-wrap):not(.plh-wrap *):not(#sf-toggle):not(#sf-toggle *):not(#diocese-bypass-pill):not(#diocese-bypass-pill *):not(.pch-card__chip):not(.pch-stat):not(.pch-stat *):not([class*="badge"]):not([class*="chip"]):not([class*="pill"]) {
+      /* :not(:is(…, … *)) = exclude “light pop-up / paper” subtrees; activity rows use a light card + dark type (blue accent bar = .activity-row__line), not the bell menu. */
+      html[data-theme="dark"] *:not(.pch-wrap):not(.pch-wrap *):not(.pch-dialog):not(.pch-dialog *):not(.pdm-widget):not(.pdm-widget *):not(.ucs-wrap):not(.ucs-wrap *):not(.plh-wrap):not(.plh-wrap *):not(#sf-toggle):not(#sf-toggle *):not(#diocese-bypass-pill):not(#diocese-bypass-pill *):not(.pch-card__chip):not(.pch-stat):not(.pch-stat *):not([class*="badge"]):not([class*="chip"]):not([class*="pill"]):not(:is(.notification-menu, .notification-menu *, .topbar-menu.notification-menu, .topbar-menu.notification-menu *, .notification-item, .notification-item *, .notification-empty, .notification-empty *, .activity-row, .activity-row *, .activity-card, .activity-card *, [class^="user-activity"], [class^="user-activity"] *)):not(:is([class*="notification-toast"], [class*="notification-toast"] *, [class*="activity-pop"], [class*="activity-pop"] *)):not(#diolink-toast-host):not(#diolink-toast-host *) {
         color: #ffffff !important;
       }
 
@@ -446,15 +451,16 @@
         stroke: currentColor;
       }
 
-      /* Sidebar / nav / topbar -- always white for nav items. */
+      /* Sidebar / nav / topbar -- always white for nav items.
+         Exempt the bell “notification” dropdown (it uses a light panel + dark type). */
       html[data-theme="dark"] nav a,
       html[data-theme="dark"] nav button,
       html[data-theme="dark"] [class*="sidebar"] a,
       html[data-theme="dark"] [class*="sidebar"] button,
       html[data-theme="dark"] [class*="navigation"] a,
       html[data-theme="dark"] [class*="navigation"] button,
-      html[data-theme="dark"] [class*="topbar"],
-      html[data-theme="dark"] [class*="topbar"] * {
+      html[data-theme="dark"] [class*="topbar"]:not(.notification-menu):not(.topbar-menu.notification-menu),
+      html[data-theme="dark"] [class*="topbar"] *:not(:is(.notification-menu, .notification-menu *, .topbar-menu.notification-menu, .topbar-menu.notification-menu *)) {
         color: #ffffff !important;
       }
       html[data-theme="dark"] nav svg,
@@ -519,8 +525,17 @@
       [class*="realtime-toast"],
       [class*="realtime-toast"] *,
       [data-notification-toast],
-      [data-notification-toast] * {
+      [data-notification-toast] *,
+      #diolink-toast-host,
+      #diolink-toast-host * {
         color: #0f172a !important;           /* slate-900 */
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      /* _diolinkShowToast: second line is muted body */
+      #diolink-toast-host > div > div + div,
+      #diolink-toast-host [style*="color:#475569"] {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
       }
 
       /* Muted rows inside the menu get a softer dark-gray. */
@@ -557,8 +572,16 @@
       html[data-theme="dark"] [class*="realtime-toast"],
       html[data-theme="dark"] [class*="realtime-toast"] *,
       html[data-theme="dark"] [data-notification-toast],
-      html[data-theme="dark"] [data-notification-toast] * {
+      html[data-theme="dark"] [data-notification-toast] *,
+      html[data-theme="dark"] #diolink-toast-host,
+      html[data-theme="dark"] #diolink-toast-host * {
         color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] #diolink-toast-host > div > div + div,
+      html[data-theme="dark"] #diolink-toast-host [style*="color:#475569"] {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
       }
       html[data-theme="dark"] .notification-menu [class*="subtitle"],
       html[data-theme="dark"] .notification-menu [class*="meta"],
@@ -568,6 +591,7 @@
       html[data-theme="dark"] .notification-item__time,
       html[data-theme="dark"] .notification-empty small {
         color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
       }
 
       /* Headings inside notifications: extra bold, pure dark. */
@@ -580,6 +604,7 @@
       html[data-theme="dark"] .notification-item [class*="title"],
       html[data-theme="dark"] .notification-item strong {
         color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
       }
 
       /* Ensure the notification cards keep a light background so the
@@ -592,6 +617,61 @@
       html[data-theme="dark"] [class*="realtime-toast"] {
         background: #ffffff !important;
         border-color: rgba(15,23,42,.1) !important;
+      }
+      /* Top-right diolink activity toasts: keep white card + left accent; inline color loses to global * { white } without this */
+      html[data-theme="dark"] #diolink-toast-host > div {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+
+      /* Activity feed rows (blue vertical accent = .activity-row__line): light card + dark type.
+         The global h4/span/strong :root rules would otherwise force white and hide copy. */
+      html[data-theme="dark"] .activity-row,
+      html[data-theme="dark"] .activity-row *:not(.activity-row__line) {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] .activity-row span {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
+      }
+      html[data-theme="dark"] .activity-row strong {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] .activity-row h2,
+      html[data-theme="dark"] .activity-row h3,
+      html[data-theme="dark"] .activity-row h4,
+      html[data-theme="dark"] .activity-card h2,
+      html[data-theme="dark"] .activity-card h3,
+      html[data-theme="dark"] .activity-card h4,
+      html[data-theme="dark"] .activity-card [class*="title"] {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] .activity-card,
+      html[data-theme="dark"] .activity-card *:not(svg) {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] .activity-row a,
+      html[data-theme="dark"] .activity-row a:hover,
+      html[data-theme="dark"] .activity-card a,
+      html[data-theme="dark"] .activity-card a:hover {
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+      /* Undo global `*:hover > span` white for activity copy */
+      html[data-theme="dark"] *:hover .activity-row span,
+      html[data-theme="dark"] .activity-row:hover span {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
+      }
+      html[data-theme="dark"] *:hover .activity-row strong,
+      html[data-theme="dark"] .activity-row:hover strong {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
       }
 
       /* =========================================================
@@ -1234,8 +1314,274 @@
         to   { opacity: 1; transform: none; }
       }
     </style>
+    <style id="login-terms-ui">
+      .scene--login .login-terms-embed {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem 0.75rem;
+        margin: 0.75rem 0 0.4rem 0;
+        font-size: 0.9rem;
+        line-height: 1.45;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.95);
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.95);
+      }
+      .scene--login .login-terms-embed--invalid {
+        border-color: rgba(248, 113, 113, 0.65);
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+      }
+      .scene--login .login-terms-card {
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        padding: 0.75rem 0.8rem;
+        background: rgba(15, 23, 42, 0.24);
+        backdrop-filter: blur(10px);
+      }
+      .scene--login .login-terms-embed__text,
+      .scene--login .login-terms-embed span {
+        color: inherit;
+        -webkit-text-fill-color: inherit;
+      }
+      .scene--login .login-terms-embed input {
+        width: 1.1em;
+        height: 1.1em;
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+        cursor: pointer;
+        accent-color: #2563eb;
+      }
+      .scene--login a.login-terms-link {
+        color: #93c5fd;
+        -webkit-text-fill-color: #93c5fd;
+        text-decoration: underline;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .scene--login a.login-terms-link:hover,
+      .scene--login a.login-terms-link:focus {
+        color: #bfdbfe;
+        -webkit-text-fill-color: #bfdbfe;
+      }
+      .scene--login .login-terms-help {
+        display: block;
+        margin-top: 0.4rem;
+        color: rgba(255, 255, 255, 0.74);
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.74);
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+      dialog.login-terms-dialog {
+        max-width: min(40rem, 92vw);
+        border: 1px solid rgba(15, 23, 42, 0.2);
+        border-radius: 12px;
+        padding: 0;
+        background: #f8fafc;
+        color: #0f172a;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      }
+      .login-terms-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .login-terms-dialog__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        padding: 1.25rem 1.4rem 1.35rem;
+        margin: 0;
+        border: none;
+        background: transparent;
+        color: inherit;
+      }
+      .login-terms-dialog__inner h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .login-terms-dialog__body {
+        max-height: min(50vh, 20rem);
+        overflow: auto;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #1e293b;
+      }
+      .login-terms-dialog__body p {
+        margin: 0 0 0.65em 0;
+      }
+      .login-terms-dialog__body h3 {
+        margin: 1rem 0 0.35rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+      }
+      .login-terms-dialog__inner .primary-action {
+        align-self: flex-end;
+        margin-top: 0.25rem;
+        padding: 0.45rem 1.1rem;
+        border: none;
+        border-radius: 8px;
+        background: #1d4ed8;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .login-terms-dialog__inner .primary-action:hover {
+        background: #1e40af;
+      }
+      html[data-theme="dark"] dialog.login-terms-dialog,
+      html[data-theme="dark"] .login-terms-dialog__inner,
+      html[data-theme="dark"] .login-terms-dialog__body,
+      html[data-theme="dark"] .login-terms-dialog__body p,
+      html[data-theme="dark"] .login-terms-dialog__body h3,
+      html[data-theme="dark"] .login-terms-dialog__inner h2 {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+      }
+      html[data-theme="dark"] .login-terms-dialog__inner .primary-action {
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+        border: 1px solid rgba(15, 23, 42, 0.18) !important;
+      }
+      html[data-theme="dark"] .login-terms-dialog__inner .primary-action:hover {
+        background: #cbd5e1 !important;
+      }
+    </style>
+    <style id="calendar-event-booking-red">
+      .diocese-calendar__day.has-event,
+      .diocese-calendar__day.user-appointment-day.has-event,
+      .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled),
+      .parish-calendar-card .diocese-calendar__day.has-event,
+      html[data-theme="light"] .diocese-calendar__day.has-event,
+      html[data-theme="light"] .diocese-calendar__day.user-appointment-day.has-event,
+      html[data-theme="light"] .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled),
+      html[data-theme="light"] .parish-calendar-card .diocese-calendar__day.has-event,
+      html[data-theme="dark"] .diocese-calendar__day.has-event,
+      html[data-theme="dark"] .diocese-calendar__day.user-appointment-day.has-event,
+      html[data-theme="dark"] .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled),
+      html[data-theme="dark"] .parish-calendar-card .diocese-calendar__day.has-event {
+        border-color: rgba(220, 38, 38, 0.78) !important;
+        background: rgba(254, 202, 202, 0.82) !important;
+        box-shadow:
+          0 0 0 2px rgba(220, 38, 38, 0.14),
+          0 12px 26px rgba(220, 38, 38, 0.16) !important;
+      }
+
+      .diocese-calendar__day.has-event > strong,
+      .diocese-calendar__day.user-appointment-day.has-event > strong,
+      .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled) > strong,
+      .parish-calendar-card .diocese-calendar__day.has-event > strong,
+      html[data-theme="light"] .diocese-calendar__day.has-event > strong,
+      html[data-theme="light"] .diocese-calendar__day.user-appointment-day.has-event > strong,
+      html[data-theme="light"] .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled) > strong,
+      html[data-theme="light"] .parish-calendar-card .diocese-calendar__day.has-event > strong,
+      html[data-theme="dark"] .diocese-calendar__day.has-event > strong,
+      html[data-theme="dark"] .diocese-calendar__day.user-appointment-day.has-event > strong,
+      html[data-theme="dark"] .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled) > strong,
+      html[data-theme="dark"] .parish-calendar-card .diocese-calendar__day.has-event > strong {
+        color: #991b1b !important;
+        -webkit-text-fill-color: #991b1b !important;
+      }
+
+      .diocese-calendar__day.has-event .diocese-calendar__events span,
+      .diocese-calendar__day.has-event .diocese-calendar__events small,
+      .diocese-calendar__day.user-appointment-day.has-event .diocese-calendar__events span,
+      .diocese-calendar__day.user-appointment-day.has-event .diocese-calendar__events small,
+      .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled) .diocese-calendar__events span,
+      .diocese-calendar__day.user-appointment-day.is-unavailable:not(.is-disabled) .diocese-calendar__events small,
+      .parish-calendar-card .diocese-calendar__day.has-event .diocese-calendar__events span,
+      .parish-calendar-card .diocese-calendar__day.has-event .diocese-calendar__events small {
+        color: #7f1d1d !important;
+        -webkit-text-fill-color: #7f1d1d !important;
+      }
+    </style>
+    <style id="parish-secretary-reply-dark-text">
+      html[data-theme="dark"] .parish-secretary-chat__composer textarea,
+      html[data-theme="dark"] .parish-secretary-chat__composer textarea:focus,
+      html[data-theme="dark"] .parish-secretary-chat__composer textarea:enabled,
+      html[data-theme="dark"] .parish-secretary-chat__composer textarea:not(:placeholder-shown) {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+        caret-color: #111827 !important;
+        background: #ffffff !important;
+        border-color: #d4e0eb !important;
+        text-shadow: none !important;
+      }
+
+      html[data-theme="dark"] .parish-secretary-chat__composer textarea::placeholder {
+        color: #6b7280 !important;
+        -webkit-text-fill-color: #6b7280 !important;
+        opacity: 1 !important;
+      }
+    </style>
+    <style id="announcement-dark-white-text">
+      html[data-theme="dark"] .announcement-card h5,
+      html[data-theme="dark"] .announcement-card__topline,
+      html[data-theme="dark"] .announcement-card__topline > span,
+      html[data-theme="dark"] .announcement-card__topline .status-badge,
+      html[data-theme="dark"] .announcement-card__body small,
+      html[data-theme="dark"] .announcement-card__body h5,
+      html[data-theme="dark"] .announcement-card__body h5 *,
+      html[data-theme="dark"] .announcement-card__body small *,
+      html[data-theme="dark"] .scene--user-workspace .announcement-card h5,
+      html[data-theme="dark"] .scene--user-workspace .announcement-card__topline,
+      html[data-theme="dark"] .scene--user-workspace .announcement-card__topline > span,
+      html[data-theme="dark"] .scene--user-workspace .announcement-card__topline .status-badge,
+      html[data-theme="dark"] .scene--user-workspace .announcement-card__body small {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-shadow: none !important;
+      }
+    </style>
+    <style id="certificate-template-actions-style">
+      .certificate-template-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .certificate-template-actions > button {
+        min-width: 112px;
+      }
+
+      @media (max-width: 720px) {
+        .certificate-template-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    </style>
   </head>
   <body>
+    <dialog id="login-terms-dialog" class="login-terms-dialog" aria-labelledby="login-terms-title">
+      <form method="dialog" class="login-terms-dialog__inner">
+        <h2 id="login-terms-title">Terms, privacy, and security</h2>
+        <div class="login-terms-dialog__body">
+          <h3>Terms and conditions</h3>
+          <p>
+            By using the Diocese of Calbayog online portal, you agree to use this system lawfully, keep your
+            login credentials private, and provide accurate information when registering or booking services.
+          </p>
+          <h3>Privacy policy</h3>
+          <p>
+            Parish, diocesan, and other officials may use submitted data to carry out ministry, pastoral
+            care, and records management in line with the practices of the Diocese, subject to applicable law.
+            Misuse, impersonation, or attempts to access data you are not authorized to view is prohibited.
+          </p>
+          <h3>Security policy</h3>
+          <p>
+            Keep passwords private, sign out on shared devices, and report suspicious account activity to the
+            parish or diocesan office. The portal may restrict or review access when account misuse is suspected.
+          </p>
+          <p>
+            The Diocese may update these terms. Continued use of the service after changes constitutes acceptance
+            of the updated terms, where required by law or policy.
+          </p>
+        </div>
+        <button type="submit" class="primary-action" value="ok">Close</button>
+      </form>
+    </dialog>
     <div id="root"></div>
     <script>
       // Make sure any stale "Enter Diocese Dashboard" pill that was
@@ -1253,6 +1599,89 @@
           document.addEventListener("DOMContentLoaded", clearPill);
         }
         setTimeout(clearPill, 600);
+      })();
+    </script>
+    <script>
+      (function () {
+        var CHECK_CLASS = "login-terms-embed";
+        var ENHANCED = "data-login-terms-ready";
+
+        function openTerms(event) {
+          if (event) event.preventDefault();
+          var dialog = document.getElementById("login-terms-dialog");
+          if (!dialog) return;
+          if (typeof dialog.showModal === "function") dialog.showModal();
+          else dialog.setAttribute("open", "open");
+        }
+
+        function isLoginRegisterForm(form) {
+          if (!form || form.getAttribute(ENHANCED) === "1") return false;
+          if (!form.closest(".scene--login")) return false;
+          var submit = form.querySelector('button[type="submit"], .login-submit');
+          if (!submit) return false;
+          var text = (submit.textContent || "").toLowerCase();
+          return /log in|login|sign in|register|create|submit registration/.test(text);
+        }
+
+        function makeTermsBox(form) {
+          var id = "login-terms-" + Math.random().toString(36).slice(2, 9);
+          var label = document.createElement("label");
+          label.className = CHECK_CLASS + " login-terms-card";
+          label.setAttribute("for", id);
+          label.innerHTML =
+            '<input id="' + id + '" name="portalTermsAccepted" type="checkbox" required />' +
+            '<span class="login-terms-embed__text">' +
+              'I agree to the ' +
+              '<a class="login-terms-link" href="#terms">Terms and Conditions</a>, ' +
+              '<a class="login-terms-link" href="#privacy">Privacy Policy</a>, and ' +
+              '<a class="login-terms-link" href="#security">Security Policy</a>.' +
+              '<small class="login-terms-help">Required before logging in or creating an account.</small>' +
+            '</span>';
+          label.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", openTerms);
+          });
+          return label;
+        }
+
+        function enhanceForm(form) {
+          if (!isLoginRegisterForm(form)) return;
+          form.setAttribute(ENHANCED, "1");
+          var submit = form.querySelector('button[type="submit"], .login-submit');
+          var box = makeTermsBox(form);
+          if (submit && submit.parentElement === form) form.insertBefore(box, submit);
+          else form.appendChild(box);
+
+          function requireAccepted(event) {
+            var input = box.querySelector('input[type="checkbox"]');
+            if (!input || input.checked) return true;
+            event.preventDefault();
+            event.stopPropagation();
+            box.classList.add("login-terms-embed--invalid");
+            input.focus();
+            if (typeof input.reportValidity === "function") input.reportValidity();
+            return false;
+          }
+
+          form.addEventListener("submit", requireAccepted, true);
+          if (submit) submit.addEventListener("click", requireAccepted, true);
+
+          box.querySelector('input[type="checkbox"]').addEventListener("change", function () {
+            box.classList.remove("login-terms-embed--invalid");
+          });
+        }
+
+        function enhanceLoginTerms() {
+          document.querySelectorAll(".scene--login form").forEach(enhanceForm);
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", enhanceLoginTerms);
+        } else {
+          enhanceLoginTerms();
+        }
+        var observer = new MutationObserver(enhanceLoginTerms);
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+        window.addEventListener("hashchange", function () { setTimeout(enhanceLoginTerms, 0); });
       })();
     </script>
 
@@ -2444,10 +2873,131 @@
           } catch (e) {}
           return null;
         }
+        function isUuidString(v) {
+          if (v == null) return false;
+          var s = typeof v === "string" ? v.trim() : String(v).trim();
+          return (
+            s.length > 0 &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)
+          );
+        }
+
         function parishIdFromSession() {
           var s = getSession();
           if (!s) return null;
-          return s.parishId || s.parish_id || (s.user && (s.user.parish_id || s.user.parishId)) || null;
+          var raw =
+            s.parishId ||
+            s.parish_id ||
+            (s.user && (s.user.parish_id || s.user.parishId)) ||
+            (s.user && s.user.user_metadata && (s.user.user_metadata.parish_id || s.user.user_metadata.parishId)) ||
+            (s.user && s.user.app_metadata && (s.user.app_metadata.parish_id || s.user.app_metadata.parishId)) ||
+            null;
+          if (raw != null && typeof raw !== "string") raw = String(raw);
+          if (typeof raw === "string") raw = raw.trim();
+          return isUuidString(raw) ? raw : null;
+        }
+
+        var resolvedParishId = null;
+        var resolvingParishId = null;
+
+        function normalizeName(v) {
+          return String(v || "")
+            .toLowerCase()
+            .replace(/\bparish\s+of\b/g, "parish")
+            .replace(/\bof\s+parish\b/g, "parish")
+            .replace(/[^a-z0-9]+/g, " ")
+            .trim()
+            .replace(/\s+/g, " ");
+        }
+
+        function parishHintsFromSession() {
+          var s = getSession() || {};
+          var u = s.user || {};
+          var um = u.user_metadata || {};
+          var am = u.app_metadata || {};
+          return {
+            email: String(s.email || u.email || um.email || am.email || "").trim(),
+            name: String(
+              s.parishName ||
+              s.parish_name ||
+              um.parish_name ||
+              um.parishName ||
+              am.parish_name ||
+              am.parishName ||
+              s.displayName ||
+              ""
+            ).trim()
+          };
+        }
+
+        function saveResolvedParish(row) {
+          if (!row || !isUuidString(row.id)) return null;
+          resolvedParishId = row.id;
+          try {
+            var s = getSession() || {};
+            s.parish_id = row.id;
+            s.parishId = row.id;
+            if (row.parish_name) s.parish_name = row.parish_name;
+            window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+          } catch (e) {}
+          return row.id;
+        }
+
+        function firstRow(data) {
+          return Array.isArray(data) ? data[0] : data;
+        }
+
+        function resolveParishId() {
+          var existing = parishIdFromSession();
+          if (existing) return Promise.resolve(existing);
+          if (resolvedParishId) return Promise.resolve(resolvedParishId);
+          if (resolvingParishId) return resolvingParishId;
+
+          var hints = parishHintsFromSession();
+          var chain = Promise.resolve(null);
+
+          if (hints.email) {
+            chain = chain.then(function (id) {
+              if (id) return id;
+              return rpc("get_parish_id_by_email", { p_email: hints.email })
+                .then(function (rows) { return saveResolvedParish(firstRow(rows)); })
+                .catch(function () { return null; });
+            });
+          }
+
+          if (hints.name) {
+            chain = chain.then(function (id) {
+              if (id) return id;
+              return rpc("get_parish_id_by_name", { p_parish_name: hints.name })
+                .then(function (rows) { return saveResolvedParish(firstRow(rows)); })
+                .catch(function () { return null; });
+            });
+
+            chain = chain.then(function (id) {
+              if (id) return id;
+              var target = normalizeName(hints.name);
+              if (!target) return null;
+              return rpc("list_parishes", {})
+                .then(function (rows) {
+                  rows = Array.isArray(rows) ? rows : [];
+                  var match = rows.find(function (p) {
+                    var n = normalizeName(p.parish_name);
+                    return n === target || n.indexOf(target) !== -1 || target.indexOf(n) !== -1;
+                  });
+                  return saveResolvedParish(match);
+                })
+                .catch(function () { return null; });
+            });
+          }
+
+          resolvingParishId = chain.then(function (id) {
+            resolvingParishId = null;
+            return id;
+          }).catch(function () {
+            resolvingParishId = null;
+            return null;
+          });
+          return resolvingParishId;
         }
 
         function rpc(fn, body) {
@@ -2469,6 +3019,241 @@
               return data;
             });
           });
+        }
+
+        function parishNameFromSession() {
+          var s = getSession() || {};
+          var u = s.user || {};
+          var um = u.user_metadata || {};
+          var am = u.app_metadata || {};
+          return String(
+            s.parishName ||
+            s.parish_name ||
+            u.parish_name ||
+            um.parish_name ||
+            um.parishName ||
+            am.parish_name ||
+            am.parishName ||
+            ""
+          ).trim();
+        }
+
+        function restGet(table, params, options) {
+          params = params || {};
+          options = options || {};
+          var s = getSession();
+          var tok = (s && s.accessToken) || SUPABASE_KEY;
+          var qs = new URLSearchParams();
+          Object.keys(params).forEach(function (k) {
+            if (Array.isArray(params[k])) {
+              params[k].forEach(function (v) {
+                if (v !== undefined && v !== null && v !== "") qs.append(k, v);
+              });
+            } else if (params[k] !== undefined && params[k] !== null && params[k] !== "") {
+              qs.set(k, params[k]);
+            }
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: {
+              "Accept": "application/json",
+              "apikey": SUPABASE_KEY,
+              "Authorization": "Bearer " + tok,
+              "Prefer": options.count ? "count=exact" : ""
+            }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null;
+              try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) {
+                var err = new Error((data && (data.message || data.hint)) || ("HTTP " + r.status));
+                err.payload = data;
+                throw err;
+              }
+              if (options.count) {
+                var cr = r.headers.get("content-range") || "";
+                var m = /\/(\d+)$/.exec(cr);
+                return m ? Number(m[1]) : (Array.isArray(data) ? data.length : 0);
+              }
+              return Array.isArray(data) ? data : [];
+            });
+          });
+        }
+
+        function reportDef(kind) {
+          return {
+            bookings: {
+              table: "diocese_service_bookings", date: "booking_date", fallbackDate: "created_at",
+              title: "client_name", subtitle: "service_name", status: "booking_status",
+              search: ["client_name", "service_name", "reference_number", "father_name"], order: "created_at.desc"
+            },
+            pending: {
+              table: "diocese_service_bookings", date: "booking_date", fallbackDate: "created_at",
+              title: "client_name", subtitle: "service_name", status: "booking_status",
+              search: ["client_name", "service_name", "reference_number"], order: "created_at.desc",
+              pendingOnly: true
+            },
+            members: {
+              table: "registered_users", date: "created_at", title: "full_name", subtitle: "email", status: "role",
+              search: ["full_name", "email"], order: "created_at.desc"
+            },
+            events: {
+              table: "parish_events", date: "event_date", fallbackDate: "created_at",
+              title: "title", subtitle: "description", status: "status",
+              search: ["title", "event_name", "description", "location"], order: "event_date.desc"
+            },
+            announcements: {
+              table: "diocese_announcements", date: "created_at",
+              title: "title", subtitle: "content", status: "status",
+              search: ["title", "content"], order: "created_at.desc"
+            },
+            archive: {
+              table: "diocese_archive_records", date: "service_date", fallbackDate: "created_at",
+              title: "first_name", subtitle: "church", status: "record_type",
+              search: ["first_name", "middle_name", "last_name", "register_no"], order: "service_date.desc",
+              nameColumn: "church"
+            },
+            chapels: {
+              table: "parish_chapels", date: "created_at",
+              title: "chapel_name", subtitle: "address", status: "is_active",
+              search: ["chapel_name", "address", "barangay"], order: "chapel_name.asc",
+              idOnly: true
+            },
+            live: {
+              table: "parish_live_streams", date: "started_at", fallbackDate: "created_at",
+              title: "title", subtitle: "description", status: "status",
+              search: ["title", "description"], order: "created_at.desc"
+            }
+          }[kind] || null;
+        }
+
+        function scopedParams(def, pid, useName) {
+          var p = { select: "*", limit: 500 };
+          if (def.order) p.order = def.order;
+          if (!useName && pid) p.parish_id = "eq." + pid;
+          if (useName) {
+            var pn = parishNameFromSession();
+            if (pn) p[def.nameColumn || "parish_name"] = "ilike.*" + pn.replace(/\*/g, "") + "*";
+          }
+          // Registered members should only include accounts that actually linked
+          // a parish during registration (parish_id present), even when we fall
+          // back to name-scoping.
+          if (def.table === "registered_users" && !pid) {
+            p.parish_id = "is.not.null";
+          }
+          if (def.date && (prbFilter.from || prbFilter.to)) {
+            p[def.date] = [];
+            if (prbFilter.from) p[def.date].push("gte." + prbFilter.from);
+            if (prbFilter.to) p[def.date].push("lte." + prbFilter.to);
+          }
+          if (def.pendingOnly) p.or = "(booking_status.ilike.*pending*,booking_status.ilike.*review*,booking_status.ilike.*correction*)";
+          else if (prbFilter.status && def.status && !def.idOnly) p[def.status] = "ilike.*" + prbFilter.status.replace(/\*/g, "") + "*";
+          if (prbFilter.search && def.search && def.search.length) {
+            var q = prbFilter.search.replace(/[,*()]/g, " ").trim();
+            if (q) p.or = "(" + def.search.map(function (c) { return c + ".ilike.*" + q + "*"; }).join(",") + ")";
+          }
+          return p;
+        }
+
+        function normalizeReportRow(kind, row) {
+          row = row || {};
+          if (kind === "archive") {
+            return {
+              title: [row.first_name, row.middle_name, row.last_name].filter(Boolean).join(" ") || "Archive record",
+              subtitle: row.church || "",
+              status: row.record_type || "",
+              occurred_at: row.service_date || row.created_at
+            };
+          }
+          if (kind === "chapels") {
+            return {
+              title: row.chapel_name || "Chapel",
+              subtitle: row.address || row.barangay || "",
+              status: row.is_active === false ? "Inactive" : "Active",
+              occurred_at: row.created_at
+            };
+          }
+          var def = reportDef(kind) || {};
+          return {
+            title: row[def.title] || row.event_name || row.client_name || row.full_name || row.title || "Record",
+            subtitle: row[def.subtitle] || row.location || row.reference_number || "",
+            status: def.status ? (row[def.status] == null ? "" : String(row[def.status])) : "",
+            occurred_at: row[def.date] || row[def.fallbackDate] || row.created_at
+          };
+        }
+
+        function directReportRows(kind, pid, limit) {
+          var def = reportDef(kind);
+          if (!def) return Promise.resolve([]);
+          function run(useName) {
+            var p = scopedParams(def, pid, useName);
+            p.limit = limit || 500;
+            return restGet(def.table, p).then(function (rows) {
+              return rows.map(function (r) { return normalizeReportRow(kind, r); });
+            });
+          }
+          return run(false).then(function (rows) {
+            if (rows.length || !parishNameFromSession()) return rows;
+            return run(true).catch(function () { return rows; });
+          }).catch(function () {
+            if (!parishNameFromSession()) return [];
+            return run(true).catch(function () { return []; });
+          });
+        }
+
+        function directReportCount(kind, pid) {
+          var def = reportDef(kind);
+          if (!def) return Promise.resolve(0);
+          function run(useName) {
+            var p = scopedParams(def, pid, useName);
+            p.select = "id";
+            p.limit = 1;
+            return restGet(def.table, p, { count: true });
+          }
+          return run(false).then(function (count) {
+            if (count || !parishNameFromSession()) return count;
+            return run(true).catch(function () { return count; });
+          }).catch(function () {
+            if (!parishNameFromSession()) return 0;
+            return run(true).catch(function () { return 0; });
+          });
+        }
+
+        function directReportStats(pid) {
+          var kinds = ["bookings", "pending", "members", "events", "announcements", "archive", "chapels", "live"];
+          return Promise.all(kinds.map(function (k) {
+            return directReportCount(k, pid).then(function (v) { return [k, v]; });
+          })).then(function (pairs) {
+            var stats = {
+              month_bookings: 0, pending_bookings: 0, members: 0, events: 0,
+              announcements: 0, archive_records: 0, chapels: 0, live_streams: 0
+            };
+            pairs.forEach(function (p) {
+              if (p[0] === "bookings") stats.month_bookings = p[1];
+              if (p[0] === "pending") stats.pending_bookings = p[1];
+              if (p[0] === "members") stats.members = p[1];
+              if (p[0] === "events") stats.events = p[1];
+              if (p[0] === "announcements") stats.announcements = p[1];
+              if (p[0] === "archive") stats.archive_records = p[1];
+              if (p[0] === "chapels") stats.chapels = p[1];
+              if (p[0] === "live") stats.live_streams = p[1];
+            });
+            return stats;
+          });
+        }
+
+        function mergeStats(a, b) {
+          a = a || {};
+          b = b || {};
+          return {
+            month_bookings: Math.max(Number(a.month_bookings || 0), Number(b.month_bookings || 0)),
+            pending_bookings: Math.max(Number(a.pending_bookings || 0), Number(b.pending_bookings || 0)),
+            members: Math.max(Number(a.members || 0), Number(b.members || 0)),
+            events: Math.max(Number(a.events || 0), Number(b.events || 0)),
+            announcements: Math.max(Number(a.announcements || 0), Number(b.announcements || 0)),
+            archive_records: Math.max(Number(a.archive_records || 0), Number(b.archive_records || 0)),
+            chapels: Math.max(Number(a.chapels || 0), Number(b.chapels || 0)),
+            live_streams: Math.max(Number(a.live_streams || 0), Number(b.live_streams || 0))
+          };
         }
 
         function findReportsCard() {
@@ -2575,7 +3360,6 @@
             '<input type="search" data-prb-f="search" placeholder="Search name, service, reference…">' +
             '<div class="prb-spacer"></div>' +
             '<button type="button" class="prb-btn prb-btn--ghost" data-prb-action="reset">Reset</button>' +
-            '<button type="button" class="prb-btn prb-btn--ghost" data-prb-action="fullscreen" data-prb-fs-btn title="Toggle full screen (F)">⤢ Full screen</button>' +
             '<button type="button" class="prb-btn prb-btn--primary" data-prb-action="print-all">Print report</button>';
           body.appendChild(tb);
 
@@ -2764,7 +3548,10 @@
           var meta = METRIC[kind];
           if (!meta) return;
           var pid = parishIdFromSession();
-          if (!pid) return;
+          if (!pid) {
+            resolveParishId().then(function (id) { if (id) openDetail(kind); });
+            return;
+          }
 
           var overlay = document.createElement("div");
           overlay.className = "prb-modal";
@@ -2794,15 +3581,7 @@
             if (x) close();
           });
 
-          rpc("parish_report_rows", {
-            p_parish_id: pid,
-            p_metric:    kind,
-            p_from:      prbFilter.from || null,
-            p_to:        prbFilter.to   || null,
-            p_status:    prbFilter.status || null,
-            p_search:    prbFilter.search || null,
-            p_limit:     500
-          }).then(function (rows) {
+          function renderModalRows(rows) {
             rows = Array.isArray(rows) ? rows : [];
             var body = overlay.querySelector(".prb-modal__body");
             var cnt  = overlay.querySelector("[data-prb-count]");
@@ -2820,10 +3599,25 @@
 
             overlay.querySelector("[data-prb-print]").addEventListener("click", function () {
               printRows(meta, rows);
-            });
+            }, { once: true });
+          }
+
+          rpc("parish_report_rows", {
+            p_parish_id: pid,
+            p_metric:    kind,
+            p_from:      prbFilter.from || null,
+            p_to:        prbFilter.to   || null,
+            p_status:    prbFilter.status || null,
+            p_search:    prbFilter.search || null,
+            p_limit:     500
+          }).then(function (rows) {
+            if (Array.isArray(rows) && rows.length) return renderModalRows(rows);
+            return directReportRows(kind, pid, 500).then(renderModalRows);
           }).catch(function (err) {
-            overlay.querySelector(".prb-modal__body").innerHTML =
-              '<div class="prb-empty">Could not load records: ' + escapeHtml(err.message || '') + '</div>';
+            directReportRows(kind, pid, 500).then(renderModalRows).catch(function () {
+              overlay.querySelector(".prb-modal__body").innerHTML =
+                '<div class="prb-empty">Could not load records: ' + escapeHtml(err.message || '') + '</div>';
+            });
           });
         }
 
@@ -2875,7 +3669,10 @@
           var card = findReportsCard();
           if (!card) return;
           var pid = parishIdFromSession();
-          if (!pid) return;
+          if (!pid) {
+            resolveParishId().then(function (id) { if (id) printSummary(); });
+            return;
+          }
           var s = getSession();
           var parishName = (s && (s.parishName || s.parish_name || (s.user && s.user.parish_name))) || '';
 
@@ -2947,9 +3744,14 @@
               p_search:    prbFilter.search || null,
               p_limit:     1000
             }).then(function (rows) {
-              return { kind: kind, rows: Array.isArray(rows) ? rows : [], meta: meta };
+              if (Array.isArray(rows) && rows.length) return { kind: kind, rows: rows, meta: meta };
+              return directReportRows(kind, pid, 1000).then(function (fallbackRows) {
+                return { kind: kind, rows: fallbackRows, meta: meta };
+              });
             }).catch(function () {
-              return { kind: kind, rows: [], meta: meta };
+              return directReportRows(kind, pid, 1000).then(function (fallbackRows) {
+                return { kind: kind, rows: fallbackRows, meta: meta };
+              });
             });
           });
 
@@ -3008,7 +3810,15 @@
           ensureBento(card);
 
           var pid = parishIdFromSession();
-          if (!pid) return;
+          if (!pid) {
+            resolveParishId().then(function (id) {
+              if (id) {
+                lastRun = 0;
+                tick();
+              }
+            });
+            return;
+          }
 
           var now = Date.now();
           if (now - lastRun < 2500) return;
@@ -3018,10 +3828,17 @@
           rpc("parish_reports_by_id", { p_parish_id: pid })
             .then(function (data) {
               var row = Array.isArray(data) ? data[0] : data;
-              if (!row) return;
-              applyStats(card, row);
+              directReportStats(pid).then(function (fallback) {
+                applyStats(card, mergeStats(row, fallback));
+              }).catch(function () {
+                if (row) applyStats(card, row);
+              });
             })
-            .catch(function () { /* keep previous values */ });
+            .catch(function () {
+              directReportStats(pid).then(function (fallback) {
+                applyStats(card, fallback);
+              }).catch(function () { /* keep previous values */ });
+            });
 
           // When the user narrows by filter, override the "bookings"
           // and "pending" tiles with the filtered counts so the numbers
@@ -3033,14 +3850,32 @@
               p_status: prbFilter.status || null, p_search: prbFilter.search || null,
               p_limit: 1000
             }).then(function (rows) {
-              if (!Array.isArray(rows)) return;
+              if (!Array.isArray(rows) || !rows.length) {
+                return directReportRows("bookings", pid, 1000).then(function (fallbackRows) {
+                  setValue(card, "bookings", fallbackRows.length);
+                  var fallbackPending = fallbackRows.filter(function (r) {
+                    var s = (r.status || '').toLowerCase();
+                    return /pending|review|correction/.test(s);
+                  }).length;
+                  setValue(card, "pending", fallbackPending);
+                });
+              }
               setValue(card, "bookings", rows.length);
               var pending = rows.filter(function (r) {
                 var s = (r.status || '').toLowerCase();
                 return /pending|review|correction/.test(s);
               }).length;
               setValue(card, "pending", pending);
-            }).catch(function () {});
+            }).catch(function () {
+              directReportRows("bookings", pid, 1000).then(function (fallbackRows) {
+                setValue(card, "bookings", fallbackRows.length);
+                var fallbackPending = fallbackRows.filter(function (r) {
+                  var s = (r.status || '').toLowerCase();
+                  return /pending|review|correction/.test(s);
+                }).length;
+                setValue(card, "pending", fallbackPending);
+              }).catch(function () {});
+            });
           }
         }
 
@@ -3061,11 +3896,7 @@
             // Don't trigger while typing in the filter inputs.
             var tag = (e.target && e.target.tagName || '').toLowerCase();
             if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-            if (e.key === 'Escape') {
-              toggleFullscreen(false);
-            } else if (e.key === 'f' || e.key === 'F') {
-              toggleFullscreen();
-            }
+            // Full screen has been removed from Reports; ignore old hotkeys.
           });
           var obs = new MutationObserver(function () { tick(); });
           obs.observe(document.body, { childList: true, subtree: true });
@@ -3107,10 +3938,28 @@
           return null;
         }
 
+        function isUuidString(v) {
+          if (v == null) return false;
+          var s = typeof v === "string" ? v.trim() : String(v).trim();
+          return (
+            s.length > 0 &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)
+          );
+        }
+
         function parishIdFromSession() {
           var s = getSession();
           if (!s) return null;
-          return s.parishId || s.parish_id || (s.user && (s.user.parish_id || s.user.parishId)) || null;
+          var raw =
+            s.parishId ||
+            s.parish_id ||
+            (s.user && (s.user.parish_id || s.user.parishId)) ||
+            (s.user && s.user.user_metadata && (s.user.user_metadata.parish_id || s.user.user_metadata.parishId)) ||
+            (s.user && s.user.app_metadata && (s.user.app_metadata.parish_id || s.user.app_metadata.parishId)) ||
+            null;
+          if (raw != null && typeof raw !== "string") raw = String(raw);
+          if (typeof raw === "string") raw = raw.trim();
+          return isUuidString(raw) ? raw : null;
         }
 
         function rpc(fn, body) {
@@ -3815,6 +4664,156 @@
     </script>
 
     <!-- ================================================================
+         Parish dashboard: Delete ALL parish bookings + appointments.
+         Only available for parish-role sessions. Removes rows in
+         diocese_service_bookings scoped to the logged-in parish_name.
+         ================================================================ -->
+    <style>
+      .pab-deleteall-wrap{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin:10px 0 0}
+      .pab-deleteall-btn{appearance:none;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:#b91c1c;border-radius:10px;padding:10px 12px;font:700 12px/1 system-ui;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+      .pab-deleteall-btn:hover{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.55)}
+      .pab-deleteall-btn:disabled{opacity:.55;cursor:not-allowed}
+      html[data-theme="dark"] .pab-deleteall-btn{color:#fecaca;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.12)}
+    </style>
+    <script>
+      (function () {
+        if (window.__pabDeleteAllInjected) return;
+        window.__pabDeleteAllInjected = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e) {}
+          return null;
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function parishNameFromSession() {
+          var s = getSession() || {};
+          return String(s.parishName || s.parish_name || (s.user && (s.user.parishName || s.user.parish_name)) || "").trim();
+        }
+        function isParishRole() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase() === "parish";
+        }
+        function isParishBookingsView() {
+          if (!isParishRole()) return false;
+          // Heuristic: parish booking list rows have our minified action classes.
+          return !!document.querySelector(".parish-booking-actions, .parish-certificate-upload, .parish-booking-confirm");
+        }
+        function restGetBookings(parishName) {
+          var qs =
+            "select=id,reference_number,service_name,booking_status,created_at" +
+            "&parish_name=eq." + encodeURIComponent(parishName) +
+            "&order=created_at.desc" +
+            "&limit=10000";
+          return fetch(SUPABASE_URL + "/rest/v1/diocese_service_bookings?" + qs, {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((data && data.message) || t || ("HTTP " + r.status));
+              return Array.isArray(data) ? data : [];
+            });
+          });
+        }
+        function restDeleteIds(ids) {
+          // PostgREST supports: id=in.(a,b,c)
+          var filter = "id=in.(" + ids.map(encodeURIComponent).join(",") + ")";
+          return fetch(SUPABASE_URL + "/rest/v1/diocese_service_bookings?" + filter, {
+            method: "DELETE",
+            headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken(), Prefer: "return=minimal" }
+          }).then(function (r) {
+            if (r.ok) return;
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              throw new Error((data && data.message) || t || ("HTTP " + r.status));
+            });
+          });
+        }
+
+        function injectButton() {
+          if (!isParishBookingsView()) return;
+          if (document.querySelector(".pab-deleteall-wrap")) return;
+
+          var anchor =
+            document.querySelector(".parish-booking-actions") ||
+            document.querySelector(".glass-card__header") ||
+            document.querySelector("main") ||
+            document.body;
+
+          var wrap = document.createElement("div");
+          wrap.className = "pab-deleteall-wrap";
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "pab-deleteall-btn";
+          btn.textContent = "Delete all parish bookings";
+          wrap.appendChild(btn);
+
+          // Prefer placing above the list (walk up a bit).
+          try {
+            var host = anchor.closest(".glass-card") || anchor.parentElement || anchor;
+            (host.querySelector(".glass-card__body") || host).insertBefore(wrap, (host.querySelector(".glass-card__body") || host).firstChild);
+          } catch (e) {
+            document.body.appendChild(wrap);
+          }
+
+          btn.addEventListener("click", function () {
+            var parishName = parishNameFromSession();
+            if (!parishName) { alert("Parish is not linked to this session."); return; }
+            btn.disabled = true;
+            btn.textContent = "Loading…";
+            restGetBookings(parishName).then(function (rows) {
+              rows = Array.isArray(rows) ? rows : [];
+              if (!rows.length) { alert("No parish bookings found for " + parishName + "."); return; }
+              var cert = rows.filter(function (r) { return String(r.reference_number || "").toUpperCase().indexOf("CERT-") === 0; }).length;
+              var apt  = rows.filter(function (r) { return String(r.reference_number || "").toUpperCase().indexOf("APT-") === 0; }).length;
+              var ok = window.confirm(
+                "Delete ALL parish bookings for \"" + parishName + "\"?\n\n" +
+                "Total: " + rows.length + "\n" +
+                "Certificates (CERT-): " + cert + "\n" +
+                "Appointments (APT-): " + apt + "\n\n" +
+                "This cannot be undone."
+              );
+              if (!ok) return;
+              btn.textContent = "Deleting…";
+              var ids = rows.map(function (r) { return r.id; }).filter(Boolean);
+              // Chunk deletes to avoid URL length limits.
+              var chunkSize = 40;
+              var chain = Promise.resolve();
+              for (var i = 0; i < ids.length; i += chunkSize) {
+                (function (chunk) { chain = chain.then(function () { return restDeleteIds(chunk); }); })(ids.slice(i, i + chunkSize));
+              }
+              return chain.then(function () {
+                alert("Deleted " + ids.length + " parish bookings.");
+                window.location.reload();
+              });
+            }).catch(function (e) {
+              alert("Could not delete parish bookings: " + (e && e.message ? e.message : e));
+            }).finally(function () {
+              btn.disabled = false;
+              btn.textContent = "Delete all parish bookings";
+            });
+          });
+        }
+
+        function tick() { injectButton(); }
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          setTimeout(tick, 800);
+        } else {
+          document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 800); });
+        }
+        window.addEventListener("hashchange", function () { setTimeout(tick, 700); });
+        setInterval(tick, 2500);
+      })();
+    </script>
+
+    <!-- ================================================================
          User dashboard > My Requests: Delete (RPC umr_delete_own_booking,
          then legacy delete_my_booking, then REST DELETE fallback).
          ================================================================ -->
@@ -3848,6 +4847,29 @@
           return /#user-my-requests/i.test(window.location.hash || "");
         }
 
+        function toast(msg) {
+          try {
+            var host = document.getElementById("umr-toast-host");
+            if (!host) {
+              host = document.createElement("div");
+              host.id = "umr-toast-host";
+              host.style.cssText =
+                "position:fixed;right:16px;bottom:16px;z-index:99999;display:flex;flex-direction:column;gap:10px;max-width:min(360px, calc(100vw - 32px));";
+              document.body.appendChild(host);
+            }
+            var el = document.createElement("div");
+            el.setAttribute("role", "status");
+            el.style.cssText =
+              "background:#0f172a;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;font:600 13px/1.35 system-ui;box-shadow:0 20px 40px rgba(0,0,0,.25);";
+            el.textContent = msg;
+            host.appendChild(el);
+            setTimeout(function () { try { el.remove(); } catch (e) {} }, 4500);
+          } catch (e) {
+            // fallback
+            try { window.alert(msg); } catch (e2) {}
+          }
+        }
+
         /* Cache list returned by the app when it loads bookings for My Requests. */
         if (!window.__umrFetchWrapped) {
           window.__umrFetchWrapped = true;
@@ -3867,6 +4889,22 @@
                         window.__umrByRef[String(row.reference_number).trim()] = row.id;
                       }
                     });
+
+                    // Popup when a certificate is successfully sent to this user.
+                    // Show once per reference number.
+                    if (isMyRequestsRoute()) {
+                      data.forEach(function (row) {
+                        try {
+                          if (!row || !row.reference_number) return;
+                          if (!row.certificate_file_url) return;
+                          var ref = String(row.reference_number).trim();
+                          var key = "umr_cert_sent_" + ref;
+                          if (window.sessionStorage.getItem(key)) return;
+                          window.sessionStorage.setItem(key, "1");
+                          toast("Certificate sent successfully for " + ref + ". Open it using View Certificate.");
+                        } catch (e) {}
+                      });
+                    }
                   }).catch(function () {});
                 } catch (e) {}
                 return res;
@@ -4036,5 +5074,1264 @@
         }
       })();
     </script>
+
+    <!-- ================================================================
+         Diocese dashboard: Parish card summary popup.
+         Clicking a parish name/card opens a modal with parish info +
+         summary counts (reports RPC).
+         ================================================================ -->
+    <style>
+      .dio-parish-pop{position:fixed;inset:0;z-index:99990;background:rgba(15,23,42,.55);display:grid;place-items:center;padding:18px}
+      .dio-parish-pop__card{width:min(920px,100%);max-height:min(86vh,920px);overflow:auto;background:#fff;border:1px solid rgba(15,23,42,.14);border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+      .dio-parish-pop__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(15,23,42,.1)}
+      .dio-parish-pop__head h3{margin:0;font:800 16px/1.2 system-ui;color:#0f172a}
+      .dio-parish-pop__meta{margin-top:6px;color:#475569;font:600 12px/1.35 system-ui}
+      .dio-parish-pop__close{appearance:none;border:1px solid rgba(15,23,42,.14);background:#f8fafc;border-radius:12px;padding:10px 12px;font:800 12px/1 system-ui;cursor:pointer}
+      .dio-parish-pop__body{padding:16px 18px 18px}
+      .dio-parish-pop__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+      .dio-parish-pop__stat{border:1px solid rgba(148,163,184,.35);border-radius:14px;padding:10px 12px;background:linear-gradient(180deg,#ffffff,#f8fafc)}
+      .dio-parish-pop__stat span{display:block;font:800 10px/1 system-ui;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:8px}
+      .dio-parish-pop__stat strong{display:block;font:900 22px/1 system-ui;color:#0f172a}
+      @media (max-width: 860px){.dio-parish-pop__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      html[data-theme="dark"] .dio-parish-pop__card{background:#0b1220;border-color:rgba(148,163,184,.18)}
+      html[data-theme="dark"] .dio-parish-pop__head{border-color:rgba(148,163,184,.14)}
+      html[data-theme="dark"] .dio-parish-pop__head h3{color:#f8fafc}
+      html[data-theme="dark"] .dio-parish-pop__meta{color:#94a3b8}
+      html[data-theme="dark"] .dio-parish-pop__close{background:#111827;color:#e2e8f0;border-color:rgba(148,163,184,.22)}
+      html[data-theme="dark"] .dio-parish-pop__stat{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.18)}
+      html[data-theme="dark"] .dio-parish-pop__stat span{color:#94a3b8}
+      html[data-theme="dark"] .dio-parish-pop__stat strong{color:#f8fafc}
+    </style>
+    <script>
+      (function () {
+        if (window.__dioParishPopupInjected) return;
+        window.__dioParishPopupInjected = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e) {}
+          return null;
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase();
+        }
+        function rpc(fnName, body) {
+          return fetch(SUPABASE_URL + "/rest/v1/rpc/" + fnName, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              apikey: SUPABASE_KEY,
+              Authorization: "Bearer " + accessToken()
+            },
+            body: JSON.stringify(body || {})
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((data && (data.message || data.hint || data.details)) || t || ("HTTP " + r.status));
+              return data;
+            });
+          });
+        }
+        function restGetParish(id) {
+          return fetch(
+            SUPABASE_URL + "/rest/v1/parishes?select=id,parish_name,address,city,province,contact_number,email,created_at&id=eq." + encodeURIComponent(id) + "&limit=1",
+            { headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() } }
+          ).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((data && data.message) || t || ("HTTP " + r.status));
+              return Array.isArray(data) ? (data[0] || null) : null;
+            });
+          });
+        }
+
+        var parishIndex = null; // { byName: {lowerName: {id,name}} }
+        function ensureParishIndex() {
+          if (parishIndex) return Promise.resolve(parishIndex);
+          return rpc("list_parishes", {}).then(function (rows) {
+            rows = Array.isArray(rows) ? rows : [];
+            var byName = {};
+            rows.forEach(function (p) {
+              var nm = String(p.parish_name || p.name || "").trim();
+              var id = String(p.id || "").trim();
+              if (!nm || !id) return;
+              byName[nm.toLowerCase()] = { id: id, name: nm };
+            });
+            parishIndex = { byName: byName, rows: rows };
+            return parishIndex;
+          }).catch(function () {
+            parishIndex = { byName: {}, rows: [] };
+            return parishIndex;
+          });
+        }
+
+        function openModal(parish, stats) {
+          try { var old = document.querySelector(".dio-parish-pop"); if (old) old.remove(); } catch (e) {}
+          var ov = document.createElement("div");
+          ov.className = "dio-parish-pop";
+          var card = document.createElement("div");
+          card.className = "dio-parish-pop__card";
+          card.innerHTML =
+            '<div class="dio-parish-pop__head">' +
+              '<div>' +
+                '<h3>' + (parish && parish.parish_name ? String(parish.parish_name) : "Parish") + '</h3>' +
+                '<div class="dio-parish-pop__meta">' +
+                  [parish && parish.address ? parish.address : "", parish && parish.city ? parish.city : "", parish && parish.province ? parish.province : ""]
+                    .filter(Boolean).join(", ") +
+                  (parish && (parish.email || parish.contact_number) ? (" · " + [parish.email || "", parish.contact_number || ""].filter(Boolean).join(" · ")) : "") +
+                '</div>' +
+              '</div>' +
+              '<button type="button" class="dio-parish-pop__close">Close</button>' +
+            '</div>' +
+            '<div class="dio-parish-pop__body">' +
+              '<div class="dio-parish-pop__grid" id="dio-parish-pop-grid"></div>' +
+            '</div>';
+          ov.appendChild(card);
+          document.body.appendChild(ov);
+          ov.addEventListener("click", function (e) { if (e.target === ov) ov.remove(); });
+          card.querySelector(".dio-parish-pop__close").addEventListener("click", function () { ov.remove(); });
+
+          var grid = card.querySelector("#dio-parish-pop-grid");
+          function stat(label, value) {
+            var el = document.createElement("div");
+            el.className = "dio-parish-pop__stat";
+            el.innerHTML = "<span>" + label + "</span><strong>" + String(value == null ? 0 : value) + "</strong>";
+            grid.appendChild(el);
+          }
+          stats = stats || {};
+          stat("Bookings", stats.month_bookings);
+          stat("Pending", stats.pending_bookings);
+          stat("Members", stats.members);
+          stat("Events", stats.events);
+          stat("Announcements", stats.announcements);
+          stat("Archive", stats.archive_records);
+          stat("Chapels", stats.chapels);
+          stat("Live", stats.live_streams);
+        }
+
+        // Public helper for other widgets (Analytics/Reports panel) to open a parish popup reliably.
+        window.__openParishSummary = function (parishId) {
+          if (role() !== "diocese") return;
+          var id = String(parishId || "").trim();
+          if (!id) return;
+          // Show immediate loading modal so it doesn't look "zero".
+          openModal({ parish_name: "Loading parish…" }, { month_bookings: "…", pending_bookings: "…", members: "…", events: "…", announcements: "…", archive_records: "…", chapels: "…", live_streams: "…" });
+          Promise.all([
+            restGetParish(id).catch(function () { return null; }),
+            rpc("parish_reports_by_id", { p_parish_id: id })
+              .then(function (d) { return Array.isArray(d) ? (d[0] || d) : d; })
+              .catch(function (e) { return { __error: (e && e.message) ? e.message : String(e || "") }; })
+          ]).then(function (parts) {
+            var parish = parts[0] || {};
+            var stats = parts[1] || {};
+            if (stats && stats.__error) {
+              openModal(parish.parish_name ? parish : { parish_name: "Parish" }, { month_bookings: 0, pending_bookings: 0, members: 0, events: 0, announcements: 0, archive_records: 0, chapels: 0, live_streams: 0 });
+              try { window.alert("Could not load parish summary: " + stats.__error); } catch (e) {}
+              return;
+            }
+            openModal(parish.parish_name ? parish : { parish_name: "Parish" }, stats);
+          }).catch(function (e) {
+            try { window.alert("Could not load parish summary."); } catch (e2) {}
+          });
+        };
+
+        function tryResolveParishFromClick(target) {
+          var el = target.closest("button,a,div,article,li,tr") || target;
+          var txt = String((el && el.textContent) || "").replace(/\s+/g, " ").trim();
+          if (!txt) return null;
+          // Try exact parish name match first.
+          var lower = txt.toLowerCase();
+          if (parishIndex && parishIndex.byName[lower]) return parishIndex.byName[lower];
+          // Try contains match against known names (longest first).
+          if (parishIndex && parishIndex.rows && parishIndex.rows.length) {
+            var names = parishIndex.rows
+              .map(function (p) { return String(p.parish_name || "").trim(); })
+              .filter(Boolean)
+              .sort(function (a, b) { return b.length - a.length; });
+            for (var i = 0; i < names.length; i++) {
+              var nm = names[i];
+              if (nm && lower.indexOf(nm.toLowerCase()) !== -1) return parishIndex.byName[nm.toLowerCase()] || null;
+            }
+          }
+          return null;
+        }
+
+        function onDocClick(ev) {
+          if (role() !== "diocese") return;
+          if (document.querySelector(".dio-parish-pop")) return;
+          var t = ev.target;
+          if (!t || t.closest(".dio-parish-pop")) return;
+          // Only act when clicking inside a visible parish list/dashboard area.
+          // This is heuristic: avoids hijacking every click.
+          var likely =
+            t.closest("[class*='parish']") ||
+            t.closest("[class*='card']") ||
+            t.closest("table") ||
+            t.closest("article");
+          if (!likely) return;
+
+          ensureParishIndex().then(function () {
+            // If the clicked element already carries a parish id, use it (more reliable than text matching).
+            var pidEl = t.closest("[data-parish-id]");
+            if (pidEl) {
+              var pid = pidEl.getAttribute("data-parish-id");
+              if (pid) { window.__openParishSummary(pid); return; }
+            }
+            var hit = tryResolveParishFromClick(t);
+            if (!hit || !hit.id) return;
+            window.__openParishSummary(hit.id);
+          });
+        }
+
+        document.addEventListener("click", onDocClick, true);
+      })();
+    </script>
+
+    <!-- ================================================================
+         Diocese: Reports Center "All Parishes" panel.
+         Shows searchable parish cards + download CSV buttons.
+         ================================================================ -->
+    <style>
+      .dio-rpc-wrap{margin:14px 0 0;padding:14px 14px 16px;border:1px solid rgba(148,163,184,.25);border-radius:16px;background:linear-gradient(180deg,#ffffff,#f8fafc)}
+      html[data-theme="dark"] .dio-rpc-wrap{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.18)}
+      .dio-rpc-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+      .dio-rpc-head h4{margin:0;font:900 12px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-rpc-head h4{color:#93c5fd}
+      .dio-rpc-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+      .dio-rpc-actions input{min-width:min(320px, 74vw);border:1px solid rgba(148,163,184,.35);border-radius:12px;padding:10px 12px;font:600 13px/1.2 system-ui;background:#fff}
+      html[data-theme="dark"] .dio-rpc-actions input{background:#0b1220;color:#e2e8f0;border-color:rgba(148,163,184,.22)}
+      .dio-rpc-btn{appearance:none;border:1px solid rgba(37,99,235,.35);background:rgba(37,99,235,.08);color:#1d4ed8;border-radius:12px;padding:10px 12px;font:800 12px/1 system-ui;cursor:pointer}
+      .dio-rpc-btn:hover{background:rgba(37,99,235,.12);border-color:rgba(37,99,235,.55)}
+      html[data-theme="dark"] .dio-rpc-btn{color:#bfdbfe;border-color:rgba(96,165,250,.28);background:rgba(37,99,235,.14)}
+      .dio-rpc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+      @media (max-width: 980px){.dio-rpc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media (max-width: 640px){.dio-rpc-grid{grid-template-columns:1fr}}
+      .dio-rpc-card{border:1px solid rgba(148,163,184,.25);border-radius:14px;padding:12px 12px 10px;background:#ffffff;cursor:pointer;display:flex;flex-direction:column;gap:10px}
+      html[data-theme="dark"] .dio-rpc-card{background:#0b1220;border-color:rgba(148,163,184,.18)}
+      .dio-rpc-card strong{font:900 14px/1.2 system-ui;color:#0f172a}
+      html[data-theme="dark"] .dio-rpc-card strong{color:#f8fafc}
+      .dio-rpc-sub{color:#475569;font:600 12px/1.35 system-ui}
+      html[data-theme="dark"] .dio-rpc-sub{color:#94a3b8}
+      .dio-rpc-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+      .dio-rpc-stat{border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:8px 8px;background:linear-gradient(180deg,#f8fafc,#ffffff)}
+      html[data-theme="dark"] .dio-rpc-stat{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.14)}
+      .dio-rpc-stat span{display:block;font:900 9px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+      html[data-theme="dark"] .dio-rpc-stat span{color:#94a3b8}
+      .dio-rpc-stat em{display:block;font:900 16px/1 system-ui;color:#0f172a;font-style:normal}
+      html[data-theme="dark"] .dio-rpc-stat em{color:#f8fafc}
+      .dio-rpc-foot{margin-top:10px;color:#64748b;font:600 12px/1.35 system-ui}
+      html[data-theme="dark"] .dio-rpc-foot{color:#94a3b8}
+
+      .dio-ana{margin:12px 0 14px;padding:12px 12px 14px;border:1px solid rgba(148,163,184,.22);border-radius:16px;background:linear-gradient(180deg,#ffffff,#f8fafc)}
+      html[data-theme="dark"] .dio-ana{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.16)}
+      .dio-ana__kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+      @media (max-width: 1100px){.dio-ana__kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media (max-width: 720px){.dio-ana__kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      .dio-ana__kpi{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
+      html[data-theme="dark"] .dio-ana__kpi{background:#0b1220;border-color:rgba(148,163,184,.14)}
+      .dio-ana__kpi span{display:block;font:900 9px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:7px}
+      html[data-theme="dark"] .dio-ana__kpi span{color:#94a3b8}
+      .dio-ana__kpi strong{display:block;font:900 20px/1 system-ui;color:#0f172a}
+      html[data-theme="dark"] .dio-ana__kpi strong{color:#f8fafc}
+      .dio-ana__charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      @media (max-width: 980px){.dio-ana__charts{grid-template-columns:1fr}}
+      .dio-ana__chart{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
+      html[data-theme="dark"] .dio-ana__chart{background:#0b1220;border-color:rgba(148,163,184,.14)}
+      .dio-ana__chart h5{margin:0 0 10px;font:900 11px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-ana__chart h5{color:#93c5fd}
+      .dio-ana__chart canvas{width:100%;height:260px}
+      .dio-ana__warn{margin-top:10px;color:#b91c1c;font:700 12px/1.4 system-ui}
+      html[data-theme="dark"] .dio-ana__warn{color:#fecaca}
+    </style>
+    <script>
+      (function () {
+        // Disabled: old Reports Center / Analytics injection (replaced by rebuilt analytics).
+        if (window.__dioReportsAllParishes) return;
+        window.__dioReportsAllParishes = true;
+        return;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e) {}
+          return null;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase();
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function rpc(fnName, body) {
+          return fetch(SUPABASE_URL + "/rest/v1/rpc/" + fnName, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              apikey: SUPABASE_KEY,
+              Authorization: "Bearer " + accessToken()
+            },
+            body: JSON.stringify(body || {})
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((data && (data.message || data.hint || data.details)) || t || ("HTTP " + r.status));
+              return data;
+            });
+          });
+        }
+        function restGet(table, params) {
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function (k) {
+            if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((data && data.message) || t || ("HTTP " + r.status));
+              return Array.isArray(data) ? data : [];
+            });
+          });
+        }
+
+        function findReportsCenterCard() {
+          var heads = document.querySelectorAll(".glass-card__header h4, h4");
+          for (var i = 0; i < heads.length; i++) {
+            var t = (heads[i].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+            // Some builds label this area as "Reports Center" and others as "Analytics Center".
+            if (t === "reports center" || t === "analytics center") {
+              return heads[i].closest(".glass-card") || heads[i].closest("article") || heads[i].parentElement;
+            }
+          }
+          return null;
+        }
+
+        function csvEscape(v) {
+          var s = v == null ? "" : String(v);
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        function downloadCsv(name, rows) {
+          rows = Array.isArray(rows) ? rows : [];
+          if (!rows.length) return;
+          var keys = Object.keys(rows[0]);
+          var lines = [keys.map(csvEscape).join(",")];
+          rows.forEach(function (r) {
+            lines.push(keys.map(function (k) { return csvEscape(r[k]); }).join(","));
+          });
+          var blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 1500);
+        }
+
+        var state = { rows: [], statsById: {}, q: "" };
+
+        function ensureChartJs() {
+          if (window.Chart && typeof window.Chart === "function") return Promise.resolve();
+          if (window.__dioChartLoading) return window.__dioChartLoading;
+          window.__dioChartLoading = new Promise(function (res, rej) {
+            try {
+              var s = document.createElement("script");
+              s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+              s.async = true;
+              s.onload = function () { res(); };
+              s.onerror = function () { rej(new Error("Could not load Chart.js")); };
+              document.head.appendChild(s);
+            } catch (e) { rej(e); }
+          });
+          return window.__dioChartLoading;
+        }
+
+        function sumStats() {
+          var totals = { parishes: 0, bookings: 0, pending: 0, members: 0, live: 0 };
+          totals.parishes = (state.rows || []).length;
+          Object.keys(state.statsById || {}).forEach(function (id) {
+            var s = state.statsById[id] || {};
+            totals.bookings += Number(s.month_bookings || 0);
+            totals.pending += Number(s.pending_bookings || 0);
+            totals.members += Number(s.members || 0);
+            totals.live += Number(s.live_streams || 0);
+          });
+          return totals;
+        }
+
+        function topN(metricKey, n) {
+          n = n || 7;
+          var rows = (state.rows || []).map(function (p) {
+            var s = state.statsById[p.id] || {};
+            return { id: p.id, name: p.parish_name || "Parish", v: Number(s[metricKey] || 0) };
+          });
+          rows.sort(function (a, b) { return b.v - a.v; });
+          return rows.slice(0, n);
+        }
+
+          function renderFallbackCharts(ana) {
+          function svgEscape(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+          function barSvg(title, items) {
+            items = Array.isArray(items) ? items : [];
+            var max = 0;
+            items.forEach(function (r) { max = Math.max(max, Number(r.v || 0)); });
+            max = max || 1;
+            var rows = items.map(function (r) {
+              var pct = Math.max(0, Math.min(100, Math.round((Number(r.v || 0) / max) * 100)));
+              return (
+                '<div style="display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;margin:8px 0">' +
+                  '<div style="min-width:0">' +
+                    '<div style="font:800 12px/1.2 system-ui;color:var(--sf-ink,#0f172a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + svgEscape(r.name) + '</div>' +
+                    '<div style="height:10px;border-radius:999px;background:rgba(29,78,216,.12);overflow:hidden;margin-top:6px">' +
+                      '<div style="height:100%;width:' + pct + '%;background:rgba(29,78,216,.75)"></div>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div style="text-align:right;font:900 13px/1 system-ui;color:var(--sf-ink,#0f172a)">' + svgEscape(r.v) + '</div>' +
+                '</div>'
+              );
+            }).join("");
+            return '<div style="min-height:260px">' + rows + '</div>';
+          }
+          function pieSvg(items) {
+            items = Array.isArray(items) ? items : [];
+            var total = items.reduce(function (a, r) { return a + Number(r.v || 0); }, 0) || 1;
+            var colors = ["#1d4ed8","#0ea5e9","#22c55e","#f59e0b","#ef4444","#a855f7","#14b8a6","#64748b"];
+            var cx = 70, cy = 70, r = 58;
+            var start = -Math.PI / 2;
+            function arcPath(frac) {
+              var end = start + frac * Math.PI * 2;
+              var x1 = cx + r * Math.cos(start), y1 = cy + r * Math.sin(start);
+              var x2 = cx + r * Math.cos(end),   y2 = cy + r * Math.sin(end);
+              var large = frac > 0.5 ? 1 : 0;
+              var d = [
+                "M", cx, cy,
+                "L", x1, y1,
+                "A", r, r, 0, large, 1, x2, y2,
+                "Z"
+              ].join(" ");
+              start = end;
+              return d;
+            }
+            var slices = items.map(function (it, i) {
+              var frac = Math.max(0, Number(it.v || 0) / total);
+              return '<path d="' + arcPath(frac) + '" fill="' + colors[i % colors.length] + '"></path>';
+            }).join("");
+            var legend = items.map(function (it, i) {
+              return (
+                '<div style="display:flex;gap:8px;align-items:center;margin:6px 0">' +
+                  '<span style="width:10px;height:10px;border-radius:3px;background:' + colors[i % colors.length] + ';display:inline-block"></span>' +
+                  '<span style="font:800 12px/1.2 system-ui;color:var(--sf-ink,#0f172a);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + svgEscape(it.name) + '</span>' +
+                  '<span style="margin-left:auto;font:900 12px/1 system-ui;color:var(--sf-ink,#0f172a)">' + svgEscape(it.v) + '</span>' +
+                '</div>'
+              );
+            }).join("");
+            return (
+              '<div style="display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:center;min-height:260px">' +
+                '<svg viewBox="0 0 140 140" width="160" height="160" aria-label="pie chart">' + slices + '</svg>' +
+                '<div>' + legend + '</div>' +
+              '</div>'
+            );
+          }
+
+          var topBookings = topN("month_bookings", 8);
+          var topLive = topN("live_streams", 8);
+          var topMembers = topN("members", 6);
+          var topPending = topN("pending_bookings", 8);
+
+          var c1 = ana.querySelector("[data-ana-bookings]");
+          var c2 = ana.querySelector("[data-ana-live]");
+          var c3 = ana.querySelector("[data-ana-members]");
+          var c4 = ana.querySelector("[data-ana-pending]");
+          if (c1 && c1.parentElement) c1.parentElement.innerHTML = '<h5>Top parish</h5>' + barSvg("Top parishes by bookings", topBookings);
+          if (c2 && c2.parentElement) c2.parentElement.innerHTML = '<h5>Most live parish</h5>' + barSvg("Most live parishes", topLive);
+          if (c3 && c3.parentElement) c3.parentElement.innerHTML = '<h5>Most user parish</h5>' + pieSvg(topMembers);
+          if (c4 && c4.parentElement) c4.parentElement.innerHTML = '<h5>Most pending</h5>' + barSvg("Top parishes by pending", topPending);
+        }
+
+        function renderAnalytics(host) {
+          var ana = host.querySelector("[data-dio-ana]");
+          if (!ana) return;
+          var totals = sumStats();
+          function setKpi(sel, val) { var el = ana.querySelector(sel); if (el) el.textContent = String(val); }
+          setKpi("[data-kpi-parishes]", totals.parishes);
+          setKpi("[data-kpi-bookings]", totals.bookings);
+          setKpi("[data-kpi-pending]", totals.pending);
+          setKpi("[data-kpi-members]", totals.members);
+          setKpi("[data-kpi-live]", totals.live);
+
+          // If there is no data yet, keep charts visible but show a helpful hint.
+          try {
+            var warn0 = ana.querySelector("[data-ana-warn]");
+            if (warn0 && totals.parishes > 0 && (totals.bookings + totals.pending + totals.members + totals.live) === 0) {
+              warn0.textContent = "No data yet — charts are ready and will fill as records are added in Supabase.";
+            }
+          } catch (e) {}
+
+          // Charts (render lazily once Chart.js loads)
+          ensureChartJs().then(function () {
+            var Chart = window.Chart;
+            if (!Chart) return;
+            var warn = ana.querySelector("[data-ana-warn]");
+            // Don't clear "no data yet" hint; only clear chart-load warnings.
+            if (warn && warn.textContent.indexOf("No data yet") !== 0) warn.textContent = "";
+            ana.__charts = ana.__charts || {};
+
+            function mkBar(canvas, title, labels, values, color) {
+              var ctx = canvas.getContext("2d");
+              var existing = ana.__charts[title];
+              if (existing) { existing.data.labels = labels; existing.data.datasets[0].data = values; existing.update(); return; }
+              ana.__charts[title] = new Chart(ctx, {
+                type: "bar",
+                data: { labels: labels, datasets: [{ label: title, data: values, backgroundColor: color }] },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                  scales: {
+                    x: { ticks: { maxRotation: 0, autoSkip: true } },
+                    y: { beginAtZero: true }
+                  }
+                }
+              });
+            }
+
+            function mkLine(canvas, title, labels, values, color) {
+              var ctx = canvas.getContext("2d");
+              var existing = ana.__charts[title];
+              if (existing) { existing.data.labels = labels; existing.data.datasets[0].data = values; existing.update(); return; }
+              ana.__charts[title] = new Chart(ctx, {
+                type: "line",
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: title,
+                    data: values,
+                    borderColor: color,
+                    backgroundColor: color.replace(/rgba\\(([^)]+)\\)/, "rgba($1,.12)"),
+                    tension: 0.35,
+                    fill: true,
+                    pointRadius: 2
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                  scales: {
+                    x: { ticks: { maxRotation: 0, autoSkip: true } },
+                    y: { beginAtZero: true }
+                  }
+                }
+              });
+            }
+
+            function mkPie(canvas, title, labels, values) {
+              var ctx = canvas.getContext("2d");
+              var existing = ana.__charts[title];
+              if (existing) { existing.data.labels = labels; existing.data.datasets[0].data = values; existing.update(); return; }
+              var colors = ["#1d4ed8","#0ea5e9","#22c55e","#f59e0b","#ef4444","#a855f7","#14b8a6","#64748b"];
+              ana.__charts[title] = new Chart(ctx, {
+                type: "pie",
+                data: { labels: labels, datasets: [{ label: title, data: values, backgroundColor: labels.map(function(_,i){return colors[i%colors.length];}) }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
+              });
+            }
+
+            var topBookings = topN("month_bookings", 8);
+            mkLine(
+              ana.querySelector("[data-ana-bookings]"),
+              "Top parishes by bookings",
+              topBookings.map(function (r) { return r.name; }),
+              topBookings.map(function (r) { return r.v; }),
+              "rgba(29,78,216,.75)"
+            );
+
+            var topPending = topN("pending_bookings", 8);
+            mkBar(
+              ana.querySelector("[data-ana-pending]"),
+              "Top parishes by pending",
+              topPending.map(function (r) { return r.name; }),
+              topPending.map(function (r) { return r.v; }),
+              "rgba(245,158,11,.75)"
+            );
+
+            var topLive = topN("live_streams", 8);
+            mkBar(
+              ana.querySelector("[data-ana-live]"),
+              "Most live parishes",
+              topLive.map(function (r) { return r.name; }),
+              topLive.map(function (r) { return r.v; }),
+              "rgba(14,165,233,.75)"
+            );
+
+            var topMembers = topN("members", 6);
+            mkPie(
+              ana.querySelector("[data-ana-members]"),
+              "Most users (top parishes)",
+              topMembers.map(function (r) { return r.name; }),
+              topMembers.map(function (r) { return r.v; })
+            );
+          }).catch(function (e) {
+            var warn = ana.querySelector("[data-ana-warn]");
+            if (warn) warn.textContent = "Charts unavailable (offline/blocked). Showing fallback charts.";
+            try { renderFallbackCharts(ana); } catch (_) {}
+          });
+        }
+
+        function render(host) {
+          if (!host) return;
+          var q = (state.q || "").toLowerCase().trim();
+          var rows = (state.rows || []).filter(function (p) {
+            if (!q) return true;
+            return String(p.parish_name || "").toLowerCase().indexOf(q) !== -1;
+          });
+          var grid = host.querySelector("[data-dio-rpc-grid]");
+          if (!grid) return;
+          grid.innerHTML = rows.map(function (p) {
+            var s = state.statsById[p.id] || {};
+            function val(k) { return String((s && s[k] != null) ? s[k] : 0); }
+            return (
+              '<div class="dio-rpc-card" data-parish-id="' + p.id + '">' +
+                '<strong>' + (p.parish_name || "Parish") + '</strong>' +
+                '<div class="dio-rpc-sub">' + [p.city || "", p.province || ""].filter(Boolean).join(", ") + '</div>' +
+                '<div class="dio-rpc-stats">' +
+                  '<div class="dio-rpc-stat"><span>Bookings</span><em>' + val("month_bookings") + '</em></div>' +
+                  '<div class="dio-rpc-stat"><span>Pending</span><em>' + val("pending_bookings") + '</em></div>' +
+                  '<div class="dio-rpc-stat"><span>Members</span><em>' + val("members") + '</em></div>' +
+                  '<div class="dio-rpc-stat"><span>Events</span><em>' + val("events") + '</em></div>' +
+                '</div>' +
+              '</div>'
+            );
+          }).join("");
+          var foot = host.querySelector("[data-dio-rpc-foot]");
+          if (foot) foot.textContent = rows.length + " parish" + (rows.length === 1 ? "" : "es") + " shown";
+          renderAnalytics(host);
+        }
+
+        function mount(card) {
+          if (!card) return;
+          if (card.querySelector(".dio-rpc-wrap")) return;
+          var body = card.querySelector(".glass-card__body") || card;
+          var wrap = document.createElement("div");
+          wrap.className = "dio-rpc-wrap";
+          wrap.innerHTML =
+            '<div class="dio-rpc-head">' +
+              '<h4>All parishes</h4>' +
+              '<div class="dio-rpc-actions">' +
+                '<input type="search" placeholder="Search parish name…" data-dio-rpc-search />' +
+                '<button type="button" class="dio-rpc-btn" data-dio-rpc-dl-summary>Download summary CSV</button>' +
+                '<button type="button" class="dio-rpc-btn" data-dio-rpc-dl-bookings>Download ALL bookings CSV</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dio-ana" data-dio-ana>' +
+              '<div class="dio-ana__kpis">' +
+                '<div class="dio-ana__kpi"><span>Total parishes</span><strong data-kpi-parishes>0</strong></div>' +
+                '<div class="dio-ana__kpi"><span>Bookings (sum)</span><strong data-kpi-bookings>0</strong></div>' +
+                '<div class="dio-ana__kpi"><span>Pending (sum)</span><strong data-kpi-pending>0</strong></div>' +
+                '<div class="dio-ana__kpi"><span>Members (sum)</span><strong data-kpi-members>0</strong></div>' +
+                '<div class="dio-ana__kpi"><span>Live streams (sum)</span><strong data-kpi-live>0</strong></div>' +
+              '</div>' +
+              '<div class="dio-ana__charts">' +
+                '<div class="dio-ana__chart"><h5>Top parish</h5><canvas data-ana-bookings></canvas></div>' +
+                '<div class="dio-ana__chart"><h5>Most pending</h5><canvas data-ana-pending></canvas></div>' +
+                '<div class="dio-ana__chart"><h5>Most live parish</h5><canvas data-ana-live></canvas></div>' +
+                '<div class="dio-ana__chart"><h5>Most user parish</h5><canvas data-ana-members></canvas></div>' +
+              '</div>' +
+              '<div class="dio-ana__warn" data-ana-warn></div>' +
+            '</div>' +
+            '<div class="dio-rpc-grid" data-dio-rpc-grid></div>' +
+            '<div class="dio-rpc-foot" data-dio-rpc-foot>Loading…</div>';
+          body.appendChild(wrap);
+
+          wrap.querySelector("[data-dio-rpc-search]").addEventListener("input", function (e) {
+            state.q = e.target.value || "";
+            render(wrap);
+          });
+
+          wrap.querySelector("[data-dio-rpc-dl-summary]").addEventListener("click", function () {
+            var rows = (state.rows || []).map(function (p) {
+              var s = state.statsById[p.id] || {};
+              return {
+                parish_id: p.id,
+                parish_name: p.parish_name || "",
+                month_bookings: s.month_bookings || 0,
+                pending_bookings: s.pending_bookings || 0,
+                members: s.members || 0,
+                events: s.events || 0,
+                announcements: s.announcements || 0,
+                archive_records: s.archive_records || 0,
+                chapels: s.chapels || 0,
+                live_streams: s.live_streams || 0
+              };
+            });
+            downloadCsv("diocese-parish-summary.csv", rows);
+          });
+
+          wrap.querySelector("[data-dio-rpc-dl-bookings]").addEventListener("click", function () {
+            // Fetch all bookings across all parishes (paged).
+            var all = [];
+            var page = 0;
+            var pageSize = 1000;
+            function step() {
+              return restGet("diocese_service_bookings", {
+                select: "id,reference_number,parish_name,client_name,service_name,booking_status,booking_date,booking_time,cost,created_at,updated_at",
+                order: "created_at.desc",
+                limit: pageSize,
+                offset: page * pageSize
+              }).then(function (rows) {
+                rows = Array.isArray(rows) ? rows : [];
+                all = all.concat(rows);
+                if (rows.length < pageSize) return all;
+                page += 1;
+                return step();
+              });
+            }
+            wrap.querySelector("[data-dio-rpc-dl-bookings]").disabled = true;
+            wrap.querySelector("[data-dio-rpc-dl-bookings]").textContent = "Downloading…";
+            step().then(function (rows) {
+              downloadCsv("diocese-all-bookings.csv", rows);
+            }).catch(function (e) {
+              window.alert("Could not download bookings: " + (e && e.message ? e.message : e));
+            }).finally(function () {
+              var b = wrap.querySelector("[data-dio-rpc-dl-bookings]");
+              b.disabled = false;
+              b.textContent = "Download ALL bookings CSV";
+            });
+          });
+
+          wrap.addEventListener("click", function (e) {
+            var c = e.target.closest("[data-parish-id]");
+            if (!c) return;
+            var id = c.getAttribute("data-parish-id");
+            try { if (typeof window.__dioParishPopupInjected !== "undefined") {} } catch (_) {}
+            // Trigger existing parish popup by dispatching a click (our other handler listens globally).
+            // If popup doesn't open, at least scroll focus.
+            c.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          });
+        }
+
+        function load(card) {
+          mount(card);
+          var wrap = card.querySelector(".dio-rpc-wrap");
+          if (!wrap) return;
+          // list_parishes via RPC (already exists).
+          rpc("list_parishes", {}).then(function (rows) {
+            rows = Array.isArray(rows) ? rows : [];
+            state.rows = rows.filter(function (p) { return p && p.id && p.parish_name; });
+            render(wrap);
+            // Fetch stats per parish (throttled).
+            var idx = 0;
+            function next() {
+              if (idx >= state.rows.length) return;
+              var p = state.rows[idx++];
+              rpc("parish_reports_by_id", { p_parish_id: p.id }).then(function (d) {
+                var row = Array.isArray(d) ? (d[0] || d) : d;
+                state.statsById[p.id] = row || {};
+                render(wrap);
+              }).catch(function () {
+                state.statsById[p.id] = {};
+              }).finally(function () {
+                setTimeout(next, 90);
+              });
+            }
+            next();
+          }).catch(function (e) {
+            var foot = wrap.querySelector("[data-dio-rpc-foot]");
+            if (foot) foot.textContent = "Could not load parishes: " + (e && e.message ? e.message : e);
+          });
+        }
+
+        function tick() {
+          if (role() !== "diocese") return;
+          var card = findReportsCenterCard();
+          if (!card) return;
+          load(card);
+        }
+
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          setTimeout(tick, 900);
+        } else {
+          document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 900); });
+        }
+        window.addEventListener("hashchange", function () { setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <!-- ================================================================
+         Diocese Analytics (rebuilt, single injector).
+         ================================================================ -->
+    <style>
+      .dio-analytics-wrap{margin:14px 0 0;padding:14px 14px 16px;border:1px solid rgba(148,163,184,.22);border-radius:16px;background:linear-gradient(180deg,#ffffff,#f8fafc)}
+      html[data-theme="dark"] .dio-analytics-wrap{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.16)}
+      .dio-analytics-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+      .dio-analytics-head h4{margin:0;font:900 12px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-analytics-head h4{color:#93c5fd}
+      .dio-analytics-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+      @media (max-width: 1100px){.dio-analytics-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media (max-width: 720px){.dio-analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      .dio-analytics-kpi{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
+      html[data-theme="dark"] .dio-analytics-kpi{background:#0b1220;border-color:rgba(148,163,184,.14)}
+      .dio-analytics-kpi span{display:block;font:900 9px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:7px}
+      html[data-theme="dark"] .dio-analytics-kpi span{color:#94a3b8}
+      .dio-analytics-kpi strong{display:block;font:900 20px/1 system-ui;color:#0f172a}
+      html[data-theme="dark"] .dio-analytics-kpi strong{color:#f8fafc}
+      .dio-analytics-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      @media (max-width: 980px){.dio-analytics-charts{grid-template-columns:1fr}}
+      .dio-analytics-chart{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
+      html[data-theme="dark"] .dio-analytics-chart{background:#0b1220;border-color:rgba(148,163,184,.14)}
+      .dio-analytics-chart h5{margin:0 0 10px;font:900 11px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-analytics-chart h5{color:#93c5fd}
+      .dio-analytics-chart canvas{width:100%;height:260px}
+      .dio-analytics-note{margin-top:10px;color:#64748b;font:600 12px/1.35 system-ui}
+      html[data-theme="dark"] .dio-analytics-note{color:#94a3b8}
+    </style>
+    <script>
+      (function () {
+        if (window.__dioAnalyticsRebuilt) return;
+        window.__dioAnalyticsRebuilt = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+
+        function getSession(){try{var a=window.sessionStorage.getItem(SESSION_KEY);if(a)return JSON.parse(a)}catch(e){}try{var b=window.localStorage.getItem(SESSION_KEY);if(b)return JSON.parse(b)}catch(e2){}return null}
+        function role(){var s=getSession()||{};return String(s.role||(s.user&&s.user.role)||"").toLowerCase()}
+        function accessToken(){var s=getSession();return (s&&s.accessToken)||SUPABASE_KEY}
+        function rpc(fn, body){return fetch(SUPABASE_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json",apikey:SUPABASE_KEY,Authorization:"Bearer "+accessToken()},body:JSON.stringify(body||{})}).then(function(r){return r.text().then(function(t){var d=null;try{d=t?JSON.parse(t):null}catch(e){}if(!r.ok)throw new Error((d&&(d.message||d.hint||d.details))||t||("HTTP "+r.status));return d})})}
+        function restGet(table, params){
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function(k){
+            if(params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function(r){
+            return r.text().then(function(t){
+              var d=null; try{ d=t?JSON.parse(t):null }catch(e){}
+              if(!r.ok) throw new Error((d && d.message) || t || ("HTTP " + r.status));
+              return Array.isArray(d) ? d : [];
+            });
+          });
+        }
+
+        function ensureChartJs(){
+          if (window.Chart && typeof window.Chart === "function") return Promise.resolve();
+          if (window.__dioChartLoadingRebuilt) return window.__dioChartLoadingRebuilt;
+          window.__dioChartLoadingRebuilt = new Promise(function (res, rej) {
+            try {
+              var s = document.createElement("script");
+              s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+              s.async = true;
+              s.onload = function () { res(); };
+              s.onerror = function () { rej(new Error("Could not load Chart.js")); };
+              document.head.appendChild(s);
+            } catch (e) { rej(e); }
+          });
+          return window.__dioChartLoadingRebuilt;
+        }
+
+        function findAnalyticsCard(){
+          var heads=document.querySelectorAll(".glass-card__header h4, h4");
+          for(var i=0;i<heads.length;i++){
+            var t=(heads[i].textContent||"").replace(/\s+/g," ").trim().toLowerCase();
+            if(t==="analytics center" || t==="reports center"){
+              return heads[i].closest(".glass-card") || heads[i].closest("article") || heads[i].parentElement;
+            }
+          }
+          return null;
+        }
+
+        var state = { parishes: [], statsById: {} };
+
+        // Sample ("old") data fallback so charts still render when live tables are empty.
+        var SAMPLE = {
+          parishes: [
+            { name: "Catbalogan", bookings: 38, pending: 7, members: 210, live: 5 },
+            { name: "Calbayog", bookings: 31, pending: 5, members: 180, live: 3 },
+            { name: "Borongan", bookings: 27, pending: 9, members: 160, live: 2 },
+            { name: "Guiuan", bookings: 19, pending: 4, members: 120, live: 1 },
+            { name: "Gandara", bookings: 16, pending: 3, members: 95, live: 1 },
+            { name: "Basey", bookings: 14, pending: 2, members: 80, live: 0 }
+          ]
+        };
+        function sampleTotals(){
+          var t = { parishes: SAMPLE.parishes.length, bookings: 0, pending: 0, members: 0, live: 0 };
+          for (var i = 0; i < SAMPLE.parishes.length; i++) {
+            var p = SAMPLE.parishes[i];
+            t.bookings += Number(p.bookings || 0);
+            t.pending += Number(p.pending || 0);
+            t.members += Number(p.members || 0);
+            t.live += Number(p.live || 0);
+          }
+          return t;
+        }
+        function sampleTopN(key, n){
+          n = n || 8;
+          var mapKey = key === "month_bookings" ? "bookings" : key === "pending_bookings" ? "pending" : key === "live_streams" ? "live" : "members";
+          var rows = SAMPLE.parishes.map(function(p){ return { name: p.name, v: Number(p[mapKey] || 0) }; });
+          rows.sort(function(a,b){ return b.v - a.v; });
+          return rows.slice(0, n);
+        }
+
+        function topN(key, n){
+          n = n || 8;
+          var rows = state.parishes.map(function(p){
+            var s = state.statsById[p.id] || {};
+            return { name: p.parish_name || "Parish", v: Number(s[key] || 0) };
+          });
+          rows.sort(function(a,b){ return b.v - a.v; });
+          return rows.slice(0, n);
+        }
+
+        function totals(){
+          var t = { parishes: state.parishes.length, bookings: 0, pending: 0, members: 0, live: 0 };
+          Object.keys(state.statsById).forEach(function(id){
+            var s = state.statsById[id] || {};
+            t.bookings += Number(s.month_bookings || 0);
+            t.pending += Number(s.pending_bookings || 0);
+            t.members += Number(s.members || 0);
+            t.live += Number(s.live_streams || 0);
+          });
+          return t;
+        }
+
+        function mount(card){
+          if(!card) return;
+          if(card.querySelector(".dio-analytics-wrap")) return;
+          var body = card.querySelector(".glass-card__body") || card;
+          var wrap = document.createElement("div");
+          wrap.className = "dio-analytics-wrap";
+          wrap.innerHTML =
+            '<div class="dio-analytics-head"><h4>Diocesan analytics</h4></div>' +
+            '<div class="dio-analytics-kpis">' +
+              '<div class="dio-analytics-kpi"><span>Total parishes</span><strong data-kpi="parishes">0</strong></div>' +
+              '<div class="dio-analytics-kpi"><span>Bookings (sum)</span><strong data-kpi="bookings">0</strong></div>' +
+              '<div class="dio-analytics-kpi"><span>Pending (sum)</span><strong data-kpi="pending">0</strong></div>' +
+              '<div class="dio-analytics-kpi"><span>Members (sum)</span><strong data-kpi="members">0</strong></div>' +
+              '<div class="dio-analytics-kpi"><span>Live streams (sum)</span><strong data-kpi="live">0</strong></div>' +
+            '</div>' +
+            '<div class="dio-analytics-charts">' +
+              '<div class="dio-analytics-chart"><h5>Top parish (bookings)</h5><canvas data-chart="bookings"></canvas></div>' +
+              '<div class="dio-analytics-chart"><h5>Most pending</h5><canvas data-chart="pending"></canvas></div>' +
+              '<div class="dio-analytics-chart"><h5>Most live parish</h5><canvas data-chart="live"></canvas></div>' +
+              '<div class="dio-analytics-chart"><h5>Most user parish</h5><canvas data-chart="members"></canvas></div>' +
+            '</div>' +
+            '<div class="dio-analytics-note">Charts render automatically (offline/blocked Chart.js will still show KPIs).</div>';
+          body.appendChild(wrap);
+        }
+
+        function render(card){
+          var wrap = card && card.querySelector(".dio-analytics-wrap");
+          if(!wrap) return;
+          var t = totals();
+          var useSample = (t.parishes === 0) || ((t.bookings + t.pending + t.members + t.live) === 0);
+          if (useSample) t = sampleTotals();
+          function set(k, v){ var el = wrap.querySelector('[data-kpi="'+k+'"]'); if(el) el.textContent = String(v); }
+          set("parishes", t.parishes); set("bookings", t.bookings); set("pending", t.pending); set("members", t.members); set("live", t.live);
+
+          ensureChartJs().then(function(){
+            var Chart = window.Chart;
+            if(!Chart) return;
+            wrap.__charts = wrap.__charts || {};
+
+            function draw(kind, canvasSel, labels, values, color){
+              var canvas = wrap.querySelector(canvasSel);
+              if(!canvas) return;
+              var ctx = canvas.getContext("2d");
+              var key = canvasSel;
+              if(wrap.__charts[key]){
+                wrap.__charts[key].data.labels = labels;
+                wrap.__charts[key].data.datasets[0].data = values;
+                wrap.__charts[key].update();
+                return;
+              }
+              var dataset = { label: "", data: values, backgroundColor: color, borderColor: color, tension: 0.35, fill: kind === "line" };
+              if(kind === "pie"){
+                var colors = ["#1d4ed8","#0ea5e9","#22c55e","#f59e0b","#ef4444","#a855f7","#14b8a6","#64748b"];
+                dataset.backgroundColor = labels.map(function(_,i){ return colors[i%colors.length]; });
+              }
+              wrap.__charts[key] = new Chart(ctx, {
+                type: kind,
+                data: { labels: labels, datasets: [dataset] },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: kind === "pie", position: "bottom" } },
+                  scales: (kind === "pie") ? {} : { y: { beginAtZero: true } }
+                }
+              });
+            }
+
+            var a = useSample ? sampleTopN("month_bookings", 8) : topN("month_bookings", 8);
+            draw("line",'[data-chart="bookings"]', a.map(function(r){return r.name;}), a.map(function(r){return r.v;}), "rgba(29,78,216,.75)");
+            var b = useSample ? sampleTopN("pending_bookings", 8) : topN("pending_bookings", 8);
+            draw("bar",'[data-chart="pending"]', b.map(function(r){return r.name;}), b.map(function(r){return r.v;}), "rgba(245,158,11,.75)");
+            var c = useSample ? sampleTopN("live_streams", 8) : topN("live_streams", 8);
+            draw("bar",'[data-chart="live"]', c.map(function(r){return r.name;}), c.map(function(r){return r.v;}), "rgba(14,165,233,.75)");
+            var d = useSample ? sampleTopN("members", 6) : topN("members", 6);
+            draw("pie",'[data-chart="members"]', d.map(function(r){return r.name;}), d.map(function(r){return r.v;}), "rgba(34,197,94,.75)");
+          }).catch(function(){});
+        }
+
+        function load(card){
+          mount(card);
+          rpc("list_parishes", {}).then(function(rows){
+            rows = Array.isArray(rows) ? rows : [];
+            state.parishes = rows.filter(function(p){ return p && p.id && p.parish_name; });
+            render(card);
+            var i = 0;
+            function next(){
+              if(i >= state.parishes.length) return;
+              var p = state.parishes[i++];
+              rpc("parish_reports_by_id", { p_parish_id: p.id }).then(function(d){
+                var row = Array.isArray(d) ? (d[0] || d) : d;
+                state.statsById[p.id] = row || {};
+              }).catch(function(){ state.statsById[p.id] = {}; })
+              .finally(function(){ render(card); setTimeout(next, 85); });
+            }
+            next();
+          }).catch(function(){ render(card); });
+        }
+
+        function tick(){
+          if(role() !== "diocese") return;
+          var card = findAnalyticsCard();
+          if(!card) return;
+          load(card);
+        }
+
+        if(document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function(){ setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function(){ setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <style id="chancery-rental-gif-login">
+      .scene--login .login-card--intro--chancery {
+        position: relative !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 1fr !important;
+        justify-items: center !important;
+        align-items: center !important;
+        min-height: min(72vh, 760px) !important;
+      }
+      .scene--login .login-card--intro--chancery::before,
+      .scene--login .login-card--intro--chancery::after {
+        content: none !important;
+        display: none !important;
+      }
+      .scene--login .login-card--intro--chancery .workspace__eyebrow,
+      .scene--login .login-card--intro--chancery h2,
+      .scene--login .login-card--intro--chancery .login-copy,
+      .scene--login .login-card--intro--chancery .login-spotlight {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        clip-path: inset(50%) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+      .scene--login .login-card--intro--chancery .login-rental-gif {
+        display: block !important;
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        width: min(580px, 86vw) !important;
+        max-width: 100% !important;
+        max-height: min(640px, calc(100vh - 200px)) !important;
+        object-fit: contain !important;
+        margin: 0 auto !important;
+      }
+      @media (max-width: 1050px) {
+        .scene--login .login-card--intro--chancery .login-rental-gif {
+          width: min(440px, 90vw) !important;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        function enhanceChanceryRental() {
+          var cards = document.querySelectorAll(".scene--login .login-card--intro");
+          Array.prototype.forEach.call(cards, function (card) {
+            var text = (card.textContent || "").replace(/\s+/g, " ").trim();
+            // Only show RENTAL.gif on the diocesan/chancery login intro.
+            // Never show it on Parish login, Live Parish Account, or Community Member.
+            var isChancery = text.indexOf("Chancery Access") !== -1 ||
+              text.indexOf("Open the diocesan command center") !== -1 ||
+              text.indexOf("Diocese Dashboard") !== -1;
+            // NOTE: Don't block the word "parish" in general, because the
+            // Chancery description contains "parish activity". Only block the
+            // actual non-chancery account chooser labels.
+            if (/live parish account|community member/i.test(text)) isChancery = false;
+            if (!isChancery) {
+              card.classList.remove("login-card--intro--chancery");
+              var existing = card.querySelector(".login-rental-gif");
+              if (existing) try { existing.remove(); } catch (e) {}
+              return;
+            }
+            card.classList.add("login-card--intro--chancery");
+            if (!card.querySelector(".login-rental-gif")) {
+              var img = document.createElement("img");
+              img.className = "login-rental-gif";
+              img.src = "/dist/RENTAL.gif";
+              img.alt = "Diocese assistant";
+              img.loading = "eager";
+              img.decoding = "async";
+              card.appendChild(img);
+            }
+          });
+        }
+
+        function startChanceryRental() {
+          enhanceChanceryRental();
+          var obs = new MutationObserver(enhanceChanceryRental);
+          obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+          window.addEventListener("hashchange", function () {
+            window.setTimeout(enhanceChanceryRental, 0);
+          });
+        }
+
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          window.setTimeout(startChanceryRental, 0);
+        } else {
+          document.addEventListener("DOMContentLoaded", function () {
+            window.setTimeout(startChanceryRental, 0);
+          });
+        }
+      })();
+    </script>
+    <script>
+      /* Deyo welcome — Web Speech API (prefers English male voice). Chancery intro with RENTAL.gif. */
+      (function () {
+        if (typeof window.speechSynthesis === "undefined" || typeof SpeechSynthesisUtterance === "undefined") {
+          return;
+        }
+        var TEXT = "Welcome back. I'm Deyo, your parish assistant.";
+        var completed = false;
+        var pending = false;
+
+        function pickEnglishMale(voices) {
+          if (!voices || !voices.length) return null;
+          var i;
+          for (i = 0; i < voices.length; i++) {
+            var nm = (voices[i].name || "").toLowerCase();
+            var lang = (voices[i].lang || "").toLowerCase();
+            if (!/^en/.test(lang) && lang.indexOf("en") !== 0) continue;
+            if (/male|daniel|fred|david|brian|arthur|tom|james|mark|guy|aaron|richard/.test(nm)) {
+              return voices[i];
+            }
+          }
+          for (i = 0; i < voices.length; i++) {
+            if (/^en/.test((voices[i].lang || "").toLowerCase())) return voices[i];
+          }
+          return voices[0];
+        }
+
+        function speakDeyo() {
+          if (completed || pending) return;
+          var card = document.querySelector(".login-card--intro--chancery");
+          if (!card || !card.querySelector(".login-rental-gif, img.login-rental-gif, video.login-rental-gif")) {
+            return;
+          }
+          pending = true;
+          var u = new SpeechSynthesisUtterance(TEXT);
+          u.rate = 0.95;
+          u.pitch = 0.98;
+          var v = pickEnglishMale(speechSynthesis.getVoices());
+          if (v) {
+            u.voice = v;
+            u.lang = v.lang || "en-US";
+          } else {
+            u.lang = "en-US";
+          }
+          u.onend = function () {
+            pending = false;
+            completed = true;
+          };
+          u.onerror = function () {
+            pending = false;
+            /* so first pointerdown can retry if autoplay was blocked */
+          };
+          try {
+            speechSynthesis.cancel();
+            speechSynthesis.speak(u);
+          } catch (e) {
+            pending = false;
+          }
+        }
+
+        function resetIfLeft() {
+          if (!document.querySelector(".login-card--intro--chancery")) {
+            completed = false;
+            pending = false;
+          }
+        }
+
+        function schedule() {
+          resetIfLeft();
+          speakDeyo();
+        }
+
+        function onVoices() {
+          schedule();
+        }
+
+        if (speechSynthesis.getVoices().length) {
+          onVoices();
+        } else {
+          speechSynthesis.addEventListener("voiceschanged", onVoices, { once: true });
+        }
+
+        if (document.body) {
+          var mo = new MutationObserver(function () {
+            resetIfLeft();
+            if (!completed && !pending && document.querySelector(".login-card--intro--chancery")) {
+              schedule();
+            }
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        }
+
+        window.addEventListener("hashchange", function () {
+          completed = false;
+          pending = false;
+          /* Defer to next turn so the login route can render, without a user-visible wait. */
+          window.setTimeout(schedule, 0);
+        });
+
+        /* Browsers may block speech until a gesture — this retries until a line is spoken, then unhooks. */
+        function gestureForSpeech() {
+          if (completed) return;
+          if (document.querySelector(".login-card--intro--chancery")) speakDeyo();
+        }
+        document.addEventListener("pointerdown", gestureForSpeech, true);
+      })();
+    </script>
   </body>
 </html>
+
+
+
