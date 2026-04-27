@@ -6776,11 +6776,18 @@
         })();
 
         function findArchiveHost() {
+          // Prefer route-based detection (most reliable).
+          try {
+            var h = String(location.hash || "").toLowerCase();
+            if (h && (h.indexOf("archive") !== -1 || h.indexOf("archiv") !== -1)) {
+              return document.querySelector("main") || document.querySelector("[class*='scene']") || document.getElementById("root");
+            }
+          } catch (e0) {}
           var heads = document.querySelectorAll("h1,h2,h3,h4");
           for (var i = 0; i < heads.length; i++) {
             var t = (heads[i].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
             // Only match the actual archive screen title (avoid generic "Records" matches).
-            if (t === "archive" || t === "archiving" || t === "archive records" || t === "archiving records" || t.indexOf("archive") !== -1) {
+            if (t === "archive records" || t === "archiving records" || t === "archive" || t === "archiving" || t === "archive center") {
               return heads[i].closest("main") ||
                      heads[i].closest("[class*='scene']") ||
                      heads[i].closest("[class*='dashboard']") ||
