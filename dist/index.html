@@ -7165,6 +7165,194 @@
       })();
     </script>
     <style>
+      .dio-name-suggest{position:relative}
+      .dio-name-suggest__list{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:9999;border:1px solid rgba(148,163,184,.28);border-radius:14px;background:rgba(255,255,255,.98);box-shadow:0 20px 60px rgba(2,6,23,.18);overflow:hidden;max-height:260px;overflow-y:auto}
+      html[data-theme="dark"] .dio-name-suggest__list{background:rgba(11,18,32,.98);border-color:rgba(148,163,184,.18);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+      .dio-name-suggest__item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;font:800 13px/1.2 system-ui;color:#0f172a}
+      html[data-theme="dark"] .dio-name-suggest__item{color:#e2e8f0}
+      .dio-name-suggest__item:hover{background:rgba(29,78,216,.08)}
+      html[data-theme="dark"] .dio-name-suggest__item:hover{background:rgba(147,197,253,.10)}
+      .dio-name-suggest__item small{font:800 11px/1 system-ui;color:#64748b}
+      html[data-theme="dark"] .dio-name-suggest__item small{color:#94a3b8}
+    </style>
+    <script>
+      // Offline "closest result" suggestions for name fields (Certificate Template / booking).
+      (function () {
+        if (window.__dioOfflineNameSuggest) return;
+        window.__dioOfflineNameSuggest = true;
+
+        var CACHE_KEY = "dio-name-cache:v1";
+        var MAX_NAMES = 1500;
+
+        function loadCache() {
+          try { var raw = localStorage.getItem(CACHE_KEY); var arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) ? arr : []; }
+          catch (e) { return []; }
+        }
+        function saveCache(arr) {
+          try { if (!Array.isArray(arr)) return; if (arr.length > MAX_NAMES) arr = arr.slice(0, MAX_NAMES); localStorage.setItem(CACHE_KEY, JSON.stringify(arr)); }
+          catch (e) {}
+        }
+        function norm(s){ return String(s || "").replace(/\s+/g," ").trim(); }
+        function normKey(s){ return norm(s).toLowerCase(); }
+        function addNames(names){
+          names = Array.isArray(names) ? names : [];
+          if (!names.length) return;
+          var cur = loadCache();
+          var seen = {};
+          for (var i=0;i<cur.length;i++) seen[normKey(cur[i])] = true;
+          for (var j=0;j<names.length;j++){
+            var n = norm(names[j]); if (!n) continue;
+            var k = normKey(n); if (seen[k]) continue;
+            cur.unshift(n); seen[k] = true;
+          }
+          saveCache(cur);
+        }
+        function extractNames(rows){
+          rows = Array.isArray(rows) ? rows : [];
+          var out = [];
+          for (var i=0;i<rows.length;i++){
+            var r = rows[i] || {};
+            var full = r.full_name || r.client_name || r.user_full_name || r.name || null;
+            if (!full) {
+              full = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(" ");
+              if (!full) full = [r.client_first_name, r.client_middle_name, r.client_last_name].filter(Boolean).join(" ");
+            }
+            if (full) out.push(full);
+          }
+          return out;
+        }
+
+        // Cache from network responses so offline can suggest later.
+        (function(){
+          if (window.__dioNameCacheFetchWrapped) return;
+          window.__dioNameCacheFetchWrapped = true;
+          var _fetch = window.fetch;
+          window.fetch = function(input, init){
+            var url = (typeof input === "string") ? input : (input && input.url) || "";
+            var p = _fetch.apply(this, arguments);
+            try{
+              var isInteresting =
+                url.indexOf("/rest/v1/diocese_archive_records") !== -1 ||
+                url.indexOf("/rest/v1/diocese_service_bookings") !== -1 ||
+                url.indexOf("/rest/v1/registered_users") !== -1 ||
+                url.indexOf("/rpc/search_archive_records") !== -1 ||
+                url.indexOf("/rpc/search_booked_services") !== -1;
+              if (isInteresting) {
+                p.then(function(res){
+                  try{
+                    if (!res || !res.ok) return;
+                    var c = res.clone();
+                    c.json().then(function(data){
+                      var rows = Array.isArray(data) ? data : (data ? [data] : []);
+                      addNames(extractNames(rows));
+                    }).catch(function(){});
+                  } catch(e2){}
+                });
+              }
+            } catch(e1){}
+            return p;
+          };
+        })();
+
+        function score(query, cand){
+          query = normKey(query);
+          cand = normKey(cand);
+          if (!query || !cand) return -1;
+          if (cand === query) return 1000;
+          if (cand.indexOf(query) === 0) return 800 - (cand.length - query.length);
+          var idx = cand.indexOf(query);
+          if (idx !== -1) return 500 - idx;
+          // simple fuzzy: count ordered character matches
+          var qi=0, ci=0, hit=0;
+          while (qi<query.length && ci<cand.length){
+            if (query[qi] === cand[ci]) { hit++; qi++; ci++; } else { ci++; }
+          }
+          return hit >= Math.min(4, query.length) ? hit : -1;
+        }
+
+        function bestMatches(query, limit){
+          limit = limit || 8;
+          var arr = loadCache();
+          var scored = [];
+          for (var i=0;i<arr.length;i++){
+            var s = score(query, arr[i]);
+            if (s >= 0) scored.push({ name: arr[i], s: s });
+          }
+          scored.sort(function(a,b){ return b.s - a.s; });
+          return scored.slice(0, limit);
+        }
+
+        function isLogin(){
+          try { var h = String(location.hash || "").replace(/^#/, "").toLowerCase(); if (!h || h === "login") return true; } catch(e){}
+          return !!document.querySelector(".scene--login");
+        }
+        function isNameInput(el){
+          if (!el || el.tagName !== "INPUT") return false;
+          var type = String(el.type || "").toLowerCase();
+          if (type && type !== "text" && type !== "search") return false;
+          var name = normKey(el.getAttribute("name")||"");
+          var id = normKey(el.id||"");
+          var ph = normKey(el.getAttribute("placeholder")||"");
+          var aria = normKey(el.getAttribute("aria-label")||"");
+          return (
+            name.indexOf("name") !== -1 ||
+            id.indexOf("name") !== -1 ||
+            ph.indexOf("name") !== -1 ||
+            aria.indexOf("name") !== -1
+          );
+        }
+
+        function attach(el){
+          if (!el || el.getAttribute("data-dio-suggest") === "1") return;
+          el.setAttribute("data-dio-suggest", "1");
+          var parent = el.parentElement;
+          if (!parent) return;
+          parent.classList.add("dio-name-suggest");
+          var list = document.createElement("div");
+          list.className = "dio-name-suggest__list";
+          list.style.display = "none";
+          parent.appendChild(list);
+
+          function hide(){ list.style.display = "none"; list.innerHTML = ""; }
+          function render(){
+            var q = el.value || "";
+            if (norm(q).length < 2) { hide(); return; }
+            var hits = bestMatches(q, 8);
+            if (!hits.length) { hide(); return; }
+            list.innerHTML = hits.map(function(h){
+              return '<div class="dio-name-suggest__item" data-name="'+String(h.name).replace(/"/g,"&quot;")+'"><span>'+h.name+'</span><small>offline</small></div>';
+            }).join("");
+            list.style.display = "block";
+          }
+
+          el.addEventListener("input", render);
+          el.addEventListener("focus", render);
+          el.addEventListener("blur", function(){ setTimeout(hide, 120); });
+          list.addEventListener("mousedown", function(e){
+            var item = e.target && e.target.closest && e.target.closest("[data-name]");
+            if (!item) return;
+            el.value = item.getAttribute("data-name") || "";
+            try { el.dispatchEvent(new Event("input", { bubbles: true })); } catch(e2){}
+            hide();
+          });
+        }
+
+        function tick(){
+          if (isLogin()) return;
+          var scope = document.querySelector(".certificate-builder, .certificate-form, .certificate-booking-modal__dialog, .certificate-booking-modal") || document;
+          var inputs = scope.querySelectorAll("input");
+          for (var i=0;i<inputs.length;i++){
+            if (isNameInput(inputs[i])) attach(inputs[i]);
+          }
+        }
+
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function(){ setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function(){ setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <style>
       .dio-parish-dd{display:grid;gap:6px}
       .dio-parish-dd label{font:800 12px/1.2 system-ui;color:var(--text-dim,#475569)}
       html[data-theme="dark"] .dio-parish-dd label{color:#94a3b8}
