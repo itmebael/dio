@@ -5880,28 +5880,144 @@
          Diocese Analytics (rebuilt, single injector).
          ================================================================ -->
     <style>
-      .dio-analytics-wrap{margin:14px 0 0;padding:14px 14px 16px;border:1px solid rgba(148,163,184,.22);border-radius:16px;background:linear-gradient(180deg,#ffffff,#f8fafc)}
-      html[data-theme="dark"] .dio-analytics-wrap{background:linear-gradient(180deg,#0f172a,#0b1220);border-color:rgba(148,163,184,.16)}
-      .dio-analytics-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
-      .dio-analytics-head h4{margin:0;font:900 12px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+      .dio-analytics-wrap{
+        margin:14px 0 0;
+        padding:16px 16px 18px;
+        border:1px solid rgba(148,163,184,.20);
+        border-radius:18px;
+        background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.86));
+        box-shadow:0 18px 55px rgba(2,6,23,.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      html[data-theme="dark"] .dio-analytics-wrap{
+        background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(11,18,32,.74));
+        border-color:rgba(148,163,184,.14);
+        box-shadow:0 18px 65px rgba(0,0,0,.45);
+      }
+
+      .dio-analytics-head{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:14px
+      }
+      .dio-analytics-head h4{
+        margin:0;
+        font:950 13px/1.1 system-ui;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#1d4ed8
+      }
       html[data-theme="dark"] .dio-analytics-head h4{color:#93c5fd}
-      .dio-analytics-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
-      @media (max-width: 1100px){.dio-analytics-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
-      @media (max-width: 720px){.dio-analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-      .dio-analytics-kpi{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
-      html[data-theme="dark"] .dio-analytics-kpi{background:#0b1220;border-color:rgba(148,163,184,.14)}
-      .dio-analytics-kpi span{display:block;font:900 9px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:7px}
+      .dio-analytics-head select{
+        appearance:none;
+        border:1px solid rgba(148,163,184,.35);
+        border-radius:12px;
+        padding:9px 34px 9px 12px;
+        font:850 12px/1 system-ui;
+        background:#fff;
+        color:#0f172a;
+        box-shadow:0 6px 18px rgba(2,6,23,.06);
+        background-image:linear-gradient(45deg,transparent 50%,rgba(15,23,42,.8) 50%),linear-gradient(135deg,rgba(15,23,42,.8) 50%,transparent 50%);
+        background-position:calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px);
+        background-size:6px 6px, 6px 6px;
+        background-repeat:no-repeat;
+      }
+      html[data-theme="dark"] .dio-analytics-head select{
+        background:#0b1220;
+        color:#e2e8f0;
+        border-color:rgba(148,163,184,.22);
+        box-shadow:none;
+        background-image:linear-gradient(45deg,transparent 50%,rgba(226,232,240,.8) 50%),linear-gradient(135deg,rgba(226,232,240,.8) 50%,transparent 50%);
+      }
+
+      .dio-analytics-kpis{
+        display:grid;
+        grid-template-columns:repeat(5,minmax(0,1fr));
+        gap:12px;
+        margin-bottom:14px
+      }
+      @media (max-width: 1200px){.dio-analytics-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media (max-width: 760px){.dio-analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media (max-width: 420px){.dio-analytics-kpis{grid-template-columns:1fr}}
+
+      .dio-analytics-kpi{
+        border:1px solid rgba(148,163,184,.16);
+        border-radius:16px;
+        padding:12px 12px;
+        background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.72));
+        box-shadow:0 10px 26px rgba(2,6,23,.06);
+        min-width:0;
+      }
+      html[data-theme="dark"] .dio-analytics-kpi{
+        background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(15,23,42,.78));
+        border-color:rgba(148,163,184,.14);
+        box-shadow:none
+      }
+      .dio-analytics-kpi span{
+        display:block;
+        font:950 9px/1 system-ui;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#64748b;
+        margin-bottom:8px
+      }
       html[data-theme="dark"] .dio-analytics-kpi span{color:#94a3b8}
-      .dio-analytics-kpi strong{display:block;font:900 20px/1 system-ui;color:#0f172a}
+      .dio-analytics-kpi strong{
+        display:block;
+        font:950 22px/1.05 system-ui;
+        color:#0f172a
+      }
       html[data-theme="dark"] .dio-analytics-kpi strong{color:#f8fafc}
-      .dio-analytics-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+
+      .dio-analytics-charts{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:12px
+      }
       @media (max-width: 980px){.dio-analytics-charts{grid-template-columns:1fr}}
-      .dio-analytics-chart{border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;background:#fff}
-      html[data-theme="dark"] .dio-analytics-chart{background:#0b1220;border-color:rgba(148,163,184,.14)}
-      .dio-analytics-chart h5{margin:0 0 10px;font:900 11px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#1d4ed8}
+
+      .dio-analytics-chart{
+        border:1px solid rgba(148,163,184,.16);
+        border-radius:16px;
+        padding:12px 12px 10px;
+        background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.74));
+        box-shadow:0 12px 28px rgba(2,6,23,.06);
+        overflow:hidden;
+      }
+      html[data-theme="dark"] .dio-analytics-chart{
+        background:linear-gradient(180deg,rgba(11,18,32,.92),rgba(15,23,42,.78));
+        border-color:rgba(148,163,184,.14);
+        box-shadow:none
+      }
+      .dio-analytics-chart h5{
+        margin:0 0 10px;
+        font:950 11px/1.1 system-ui;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#1d4ed8
+      }
       html[data-theme="dark"] .dio-analytics-chart h5{color:#93c5fd}
-      .dio-analytics-chart canvas{width:100%;height:260px}
-      .dio-analytics-note{margin-top:10px;color:#64748b;font:600 12px/1.35 system-ui}
+
+      /* Responsive chart sizing: avoid fixed height overflow on small screens */
+      .dio-analytics-chart canvas{
+        width:100%;
+        height:min(320px, 46vh);
+        max-height:360px;
+      }
+      @media (max-width: 520px){
+        .dio-analytics-wrap{padding:14px 12px 16px;border-radius:16px}
+        .dio-analytics-chart canvas{height:min(280px, 44vh)}
+      }
+
+      .dio-analytics-note{
+        margin-top:10px;
+        color:#475569;
+        font:700 12px/1.45 system-ui
+      }
       html[data-theme="dark"] .dio-analytics-note{color:#94a3b8}
     </style>
     <script>
@@ -5935,6 +6051,7 @@
 
         function ensureChartJs(){
           if (window.Chart && typeof window.Chart === "function") return Promise.resolve();
+          if (window.__dioChartBlocked) return Promise.reject(new Error("Chart.js blocked"));
           if (window.__dioChartLoadingRebuilt) return window.__dioChartLoadingRebuilt;
           window.__dioChartLoadingRebuilt = new Promise(function (res, rej) {
             try {
@@ -5942,54 +6059,198 @@
               s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
               s.async = true;
               s.onload = function () { res(); };
-              s.onerror = function () { rej(new Error("Could not load Chart.js")); };
+              s.onerror = function () { window.__dioChartBlocked = true; rej(new Error("Could not load Chart.js")); };
               document.head.appendChild(s);
             } catch (e) { rej(e); }
           });
           return window.__dioChartLoadingRebuilt;
         }
 
-        function findAnalyticsCard(){
-          var heads=document.querySelectorAll(".glass-card__header h4, h4");
+        function renderFallbackCharts(wrap){
+          function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+          function bar(el, title, items, accent){
+            // "3D" look: gradient + top highlight + drop shadow.
+            accent = accent || "rgba(29,78,216,.86)";
+            var max = 0;
+            for (var i=0;i<items.length;i++) max = Math.max(max, Number(items[i].v||0));
+            max = max || 1;
+            var rows = "";
+            for (var j=0;j<items.length;j++){
+              var it = items[j];
+              var pct = Math.max(0, Math.min(100, Math.round((Number(it.v||0)/max)*100)));
+              var glow = accent.replace("rgba(", "rgba(").replace(/\)$/, "");
+              rows +=
+                '<div style="display:grid;grid-template-columns:1fr 52px;gap:10px;align-items:center;margin:8px 0">' +
+                  '<div style="min-width:0">' +
+                    '<div style="font:800 12px/1.2 system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary,#0f172a)">' + esc(it.name) + '</div>' +
+                    '<div style="height:12px;border-radius:999px;background:rgba(2,6,23,.08);overflow:hidden;margin-top:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)">' +
+                      '<div style="height:100%;width:'+pct+'%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 35%),'+
+                        'linear-gradient(90deg,'+accent+',rgba(255,255,255,.08));box-shadow:0 10px 22px rgba(2,6,23,.18), inset 0 1px 0 rgba(255,255,255,.45)"></div>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div style="text-align:right;font:900 12px/1 system-ui;color:var(--text-primary,#0f172a)">' + esc(it.v) + '</div>' +
+                '</div>';
+            }
+            el.innerHTML = '<h5>'+esc(title)+'</h5><div style="min-height:240px">'+rows+'</div>';
+          }
+          function pie(el, title, items){
+            var total = 0;
+            for (var i=0;i<items.length;i++) total += Number(items[i].v||0);
+            total = total || 1;
+            var colors=["#1d4ed8","#0ea5e9","#22c55e","#f59e0b","#ef4444","#a855f7","#14b8a6","#64748b"];
+            var cx=70,cy=70,r=58,start=-Math.PI/2;
+            function arc(frac){
+              var end=start+frac*Math.PI*2;
+              var x1=cx+r*Math.cos(start), y1=cy+r*Math.sin(start);
+              var x2=cx+r*Math.cos(end),   y2=cy+r*Math.sin(end);
+              var large=frac>0.5?1:0;
+              var d=["M",cx,cy,"L",x1,y1,"A",r,r,0,large,1,x2,y2,"Z"].join(" ");
+              start=end; return d;
+            }
+            // "3D" look: add a shadow base + slight vertical thickness by duplicating paths.
+            var paths="", shadowPaths="", legend="";
+            for (var j=0;j<items.length;j++){
+              var it=items[j], frac=Math.max(0, Number(it.v||0)/total);
+              var col = colors[j%colors.length];
+              // shadow layer slightly shifted down (fake thickness)
+              shadowPaths += '<path d="'+arc(frac)+'" fill="rgba(2,6,23,.22)" transform="translate(0,6)"></path>';
+              paths += '<path d="'+arc(frac)+'" fill="'+col+'" style="filter:drop-shadow(0 10px 18px rgba(2,6,23,.22))"></path>';
+              legend += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0">' +
+                '<span style="width:10px;height:10px;border-radius:3px;background:'+colors[j%colors.length]+';display:inline-block"></span>' +
+                '<span style="font:800 12px/1.2 system-ui;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary,#0f172a)">'+esc(it.name)+'</span>' +
+                '<span style="margin-left:auto;font:900 12px/1 system-ui;color:var(--text-primary,#0f172a)">'+esc(it.v)+'</span>' +
+              '</div>';
+            }
+            el.innerHTML =
+              '<h5>'+esc(title)+'</h5>' +
+              '<div style="display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:center;min-height:240px">' +
+                '<svg viewBox="0 0 140 146" width="160" height="160" aria-label="pie chart" style="overflow:visible">' +
+                  '<g>'+shadowPaths+'</g>' +
+                  '<g>'+paths+'</g>' +
+                  '<circle cx="70" cy="70" r="26" fill="rgba(255,255,255,.35)"></circle>' +
+                '</svg>' +
+                '<div>'+legend+'</div>' +
+              '</div>';
+          }
+
+          var charts = wrap.querySelectorAll(".dio-analytics-chart");
+          if (!charts || !charts.length) return;
+
+          loadRangeAgg().then(function(agg){
+            var by = (agg && agg.byId) ? agg.byId : {};
+            function topBy(metric, n){
+              n = n || 8;
+              var rows = state.parishes.map(function(p){
+                var rec = by[p.id] || {};
+                return { name: p.parish_name || "Parish", v: Number(rec[metric] || 0) };
+              });
+              rows.sort(function(a,b){return b.v-a.v;});
+              return rows.slice(0,n);
+            }
+            var topBookings = topBy("bookings", 8);
+            var topPending  = topBy("pending", 8);
+            var topLive = topN("live_streams", 8);
+            var topMembers = topN("members", 6);
+
+            bar(charts[0], "Top parish (bookings)", topBookings, "rgba(29,78,216,.82)");
+            bar(charts[1], "Most pending", topPending, "rgba(245,158,11,.82)");
+            bar(charts[2], "Most live parish", topLive, "rgba(14,165,233,.82)");
+            pie(charts[3], "Most user parish", topMembers);
+          });
+        }
+
+        function findAnalyticsHost(){
+          // New builds render "Analytics Center" as a page title (often h1/h2),
+          // not a glass-card header. Mount into the main page content area.
+          var heads=document.querySelectorAll("h1,h2,h3,h4");
           for(var i=0;i<heads.length;i++){
             var t=(heads[i].textContent||"").replace(/\s+/g," ").trim().toLowerCase();
-            if(t==="analytics center" || t==="reports center"){
-              return heads[i].closest(".glass-card") || heads[i].closest("article") || heads[i].parentElement;
+            if(t==="analytics center"){
+              return heads[i].closest("main") ||
+                     heads[i].closest("[class*='scene']") ||
+                     heads[i].closest("[class*='dashboard']") ||
+                     document.getElementById("root");
             }
           }
+          // Fallback: if route/hash mentions analytics, mount at root.
+          try {
+            var h=(location.hash||"").toLowerCase();
+            if(h.indexOf("analytic")!==-1) return document.getElementById("root");
+          } catch(e) {}
           return null;
         }
 
-        var state = { parishes: [], statsById: {} };
+        var state = { parishes: [], statsById: {}, range: "month", rangeAgg: null, rangeAggAt: 0, rangeAggKey: "" };
 
-        // Sample ("old") data fallback so charts still render when live tables are empty.
-        var SAMPLE = {
-          parishes: [
-            { name: "Catbalogan", bookings: 38, pending: 7, members: 210, live: 5 },
-            { name: "Calbayog", bookings: 31, pending: 5, members: 180, live: 3 },
-            { name: "Borongan", bookings: 27, pending: 9, members: 160, live: 2 },
-            { name: "Guiuan", bookings: 19, pending: 4, members: 120, live: 1 },
-            { name: "Gandara", bookings: 16, pending: 3, members: 95, live: 1 },
-            { name: "Basey", bookings: 14, pending: 2, members: 80, live: 0 }
-          ]
-        };
-        function sampleTotals(){
-          var t = { parishes: SAMPLE.parishes.length, bookings: 0, pending: 0, members: 0, live: 0 };
-          for (var i = 0; i < SAMPLE.parishes.length; i++) {
-            var p = SAMPLE.parishes[i];
-            t.bookings += Number(p.bookings || 0);
-            t.pending += Number(p.pending || 0);
-            t.members += Number(p.members || 0);
-            t.live += Number(p.live || 0);
-          }
-          return t;
+        function calcRange(){
+          var now = new Date();
+          var start;
+          if (state.range === "day") start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          else if (state.range === "week") start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          else if (state.range === "year") start = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          else start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          return { startIso: start.toISOString(), endIso: now.toISOString() };
         }
-        function sampleTopN(key, n){
-          n = n || 8;
-          var mapKey = key === "month_bookings" ? "bookings" : key === "pending_bookings" ? "pending" : key === "live_streams" ? "live" : "members";
-          var rows = SAMPLE.parishes.map(function(p){ return { name: p.name, v: Number(p[mapKey] || 0) }; });
-          rows.sort(function(a,b){ return b.v - a.v; });
-          return rows.slice(0, n);
+
+        function loadRangeAgg(){
+          // Cache for 45s per range (avoid hammering PostgREST).
+          var key = state.range;
+          var now = Date.now();
+          if (state.rangeAggKey === key && state.rangeAgg && (now - state.rangeAggAt) < 45000) return Promise.resolve(state.rangeAgg);
+          state.rangeAggKey = key;
+          state.rangeAggAt = now;
+          state.rangeAgg = { byId: {}, totals: { bookings: 0, pending: 0 } };
+
+          // Build a quick parish_name -> id map (for legacy rows missing parish_id).
+          var nameToId = {};
+          for (var i = 0; i < (state.parishes || []).length; i++) {
+            var p = state.parishes[i] || {};
+            var nm = String(p.parish_name || "").toLowerCase().trim();
+            if (nm) nameToId[nm] = p.id;
+          }
+
+          var r = calcRange();
+          var page = 0;
+          var pageSize = 1000;
+          var maxRows = 12000; // safety cap
+
+          function isPending(status){
+            var s = String(status || "").toLowerCase();
+            return (s.indexOf("pending") !== -1) || (s.indexOf("for review") !== -1) || (s.indexOf("awaiting") !== -1);
+          }
+
+          function step(){
+            return restGet("diocese_service_bookings", {
+              select: "parish_id,parish_name,booking_status,created_at",
+              created_at: "gte." + r.startIso,
+              order: "created_at.desc",
+              limit: pageSize,
+              offset: page * pageSize
+            }).then(function(rows){
+              rows = Array.isArray(rows) ? rows : [];
+              for (var j = 0; j < rows.length; j++) {
+                var it = rows[j] || {};
+                var pid = it.parish_id || null;
+                if (!pid) {
+                  var nm = String(it.parish_name || "").toLowerCase().trim();
+                  if (nm && nameToId[nm]) pid = nameToId[nm];
+                }
+                if (!pid) continue; // can't attribute to a parish
+                var rec = state.rangeAgg.byId[pid] || (state.rangeAgg.byId[pid] = { bookings: 0, pending: 0 });
+                rec.bookings += 1;
+                state.rangeAgg.totals.bookings += 1;
+                if (isPending(it.booking_status)) { rec.pending += 1; state.rangeAgg.totals.pending += 1; }
+              }
+              if (rows.length < pageSize) return state.rangeAgg;
+              if ((page + 1) * pageSize >= maxRows) return state.rangeAgg;
+              page += 1;
+              return step();
+            });
+          }
+
+          return step().catch(function(){
+            return state.rangeAgg;
+          });
         }
 
         function topN(key, n){
@@ -6014,14 +6275,24 @@
           return t;
         }
 
-        function mount(card){
-          if(!card) return;
-          if(card.querySelector(".dio-analytics-wrap")) return;
-          var body = card.querySelector(".glass-card__body") || card;
+        function mount(host){
+          if(!host) return;
+          if(host.querySelector && host.querySelector(".dio-analytics-wrap")) return;
           var wrap = document.createElement("div");
           wrap.className = "dio-analytics-wrap";
           wrap.innerHTML =
-            '<div class="dio-analytics-head"><h4>Diocesan analytics</h4></div>' +
+            '<div class="dio-analytics-head">' +
+              '<h4>Diocesan analytics</h4>' +
+              '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+                '<span style="font:800 10px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#64748b">Filter</span>' +
+                '<select data-range style="border:1px solid rgba(148,163,184,.35);border-radius:12px;padding:8px 10px;font:800 12px/1 system-ui;background:#fff">' +
+                  '<option value="day">Day</option>' +
+                  '<option value="week">Week</option>' +
+                  '<option value="month">Month</option>' +
+                  '<option value="year">Year</option>' +
+                '</select>' +
+              '</div>' +
+            '</div>' +
             '<div class="dio-analytics-kpis">' +
               '<div class="dio-analytics-kpi"><span>Total parishes</span><strong data-kpi="parishes">0</strong></div>' +
               '<div class="dio-analytics-kpi"><span>Bookings (sum)</span><strong data-kpi="bookings">0</strong></div>' +
@@ -6035,18 +6306,36 @@
               '<div class="dio-analytics-chart"><h5>Most live parish</h5><canvas data-chart="live"></canvas></div>' +
               '<div class="dio-analytics-chart"><h5>Most user parish</h5><canvas data-chart="members"></canvas></div>' +
             '</div>' +
-            '<div class="dio-analytics-note">Charts render automatically (offline/blocked Chart.js will still show KPIs).</div>';
-          body.appendChild(wrap);
+            '<div class="dio-analytics-note">Bookings/Pending follow the filter. Live/Members are totals by parish.</div>';
+          // Prefer to insert near the top, under the page title.
+          if (host.firstChild) host.insertBefore(wrap, host.firstChild);
+          else host.appendChild(wrap);
+          var sel = wrap.querySelector("[data-range]");
+          if (sel) {
+            sel.value = state.range;
+            sel.addEventListener("change", function(){
+              state.range = sel.value || "month";
+              state.rangeAggAt = 0;
+              state.rangeAgg = null;
+              render(host);
+            });
+          }
         }
 
-        function render(card){
-          var wrap = card && card.querySelector(".dio-analytics-wrap");
+        function render(host){
+          var wrap = host && host.querySelector && host.querySelector(".dio-analytics-wrap");
           if(!wrap) return;
-          var t = totals();
-          var useSample = (t.parishes === 0) || ((t.bookings + t.pending + t.members + t.live) === 0);
-          if (useSample) t = sampleTotals();
           function set(k, v){ var el = wrap.querySelector('[data-kpi="'+k+'"]'); if(el) el.textContent = String(v); }
-          set("parishes", t.parishes); set("bookings", t.bookings); set("pending", t.pending); set("members", t.members); set("live", t.live);
+          var t = totals();
+          set("parishes", t.parishes);
+          set("members", t.members);
+          set("live", t.live);
+          // bookings + pending: real data within selected range
+          loadRangeAgg().then(function(agg){
+            var bt = (agg && agg.totals) ? agg.totals : { bookings: 0, pending: 0 };
+            set("bookings", Number(bt.bookings || 0));
+            set("pending", Number(bt.pending || 0));
+          });
 
           ensureChartJs().then(function(){
             var Chart = window.Chart;
@@ -6081,23 +6370,38 @@
               });
             }
 
-            var a = useSample ? sampleTopN("month_bookings", 8) : topN("month_bookings", 8);
-            draw("line",'[data-chart="bookings"]', a.map(function(r){return r.name;}), a.map(function(r){return r.v;}), "rgba(29,78,216,.75)");
-            var b = useSample ? sampleTopN("pending_bookings", 8) : topN("pending_bookings", 8);
-            draw("bar",'[data-chart="pending"]', b.map(function(r){return r.name;}), b.map(function(r){return r.v;}), "rgba(245,158,11,.75)");
-            var c = useSample ? sampleTopN("live_streams", 8) : topN("live_streams", 8);
+            // Bookings/Pending use date-filtered real bookings (rangeAgg)
+            loadRangeAgg().then(function(agg){
+              var by = (agg && agg.byId) ? agg.byId : {};
+              var rowsB = state.parishes.map(function(p){
+                var rec = by[p.id] || {};
+                return { name: p.parish_name || "Parish", v: Number(rec.bookings || 0) };
+              }).sort(function(a,b){ return b.v - a.v; }).slice(0, 8);
+              draw("line",'[data-chart="bookings"]', rowsB.map(function(r){return r.name;}), rowsB.map(function(r){return r.v;}), "rgba(29,78,216,.75)");
+
+              var rowsP = state.parishes.map(function(p){
+                var rec = by[p.id] || {};
+                return { name: p.parish_name || "Parish", v: Number(rec.pending || 0) };
+              }).sort(function(a,b){ return b.v - a.v; }).slice(0, 8);
+              draw("bar",'[data-chart="pending"]', rowsP.map(function(r){return r.name;}), rowsP.map(function(r){return r.v;}), "rgba(245,158,11,.75)");
+            });
+
+            var c = topN("live_streams", 8);
             draw("bar",'[data-chart="live"]', c.map(function(r){return r.name;}), c.map(function(r){return r.v;}), "rgba(14,165,233,.75)");
-            var d = useSample ? sampleTopN("members", 6) : topN("members", 6);
+            var d = topN("members", 6);
             draw("pie",'[data-chart="members"]', d.map(function(r){return r.name;}), d.map(function(r){return r.v;}), "rgba(34,197,94,.75)");
-          }).catch(function(){});
+          }).catch(function(){
+            // Chart.js blocked by browser tracking prevention — render fallback charts without CDN.
+            try { renderFallbackCharts(wrap); } catch(e) {}
+          });
         }
 
-        function load(card){
-          mount(card);
+        function load(host){
+          mount(host);
           rpc("list_parishes", {}).then(function(rows){
             rows = Array.isArray(rows) ? rows : [];
             state.parishes = rows.filter(function(p){ return p && p.id && p.parish_name; });
-            render(card);
+            render(host);
             var i = 0;
             function next(){
               if(i >= state.parishes.length) return;
@@ -6106,17 +6410,28 @@
                 var row = Array.isArray(d) ? (d[0] || d) : d;
                 state.statsById[p.id] = row || {};
               }).catch(function(){ state.statsById[p.id] = {}; })
-              .finally(function(){ render(card); setTimeout(next, 85); });
+              .finally(function(){ render(host); setTimeout(next, 85); });
             }
             next();
-          }).catch(function(){ render(card); });
+          }).catch(function(){ render(host); });
+        }
+
+        function cleanupIfLeft(){
+          // Remove the injected analytics panel when leaving Analytics Center.
+          var host = findAnalyticsHost();
+          if (host) return; // still on analytics
+          var panels = document.querySelectorAll(".dio-analytics-wrap");
+          for (var i = 0; i < panels.length; i++) {
+            var el = panels[i];
+            if (el && el.parentElement) el.parentElement.removeChild(el);
+          }
         }
 
         function tick(){
           if(role() !== "diocese") return;
-          var card = findAnalyticsCard();
-          if(!card) return;
-          load(card);
+          var host = findAnalyticsHost();
+          if(!host) { cleanupIfLeft(); return; }
+          load(host);
         }
 
         if(document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
@@ -6328,6 +6643,915 @@
           if (document.querySelector(".login-card--intro--chancery")) speakDeyo();
         }
         document.addEventListener("pointerdown", gestureForSpeech, true);
+      })();
+    </script>
+    <script>
+      // Grammar fix: booking popup "for yourself or another" (Death Certificate exempt).
+      (function () {
+        function normalizeText(s) {
+          return String(s || "").replace(/\s+/g, " ").trim().toLowerCase();
+        }
+        function applyFix(root) {
+          root = root || document;
+          var nodes = root.querySelectorAll("p, span, small, div, label, li");
+          for (var i = 0; i < nodes.length; i++) {
+            var el = nodes[i];
+            if (!el || !el.textContent) continue;
+            var t = normalizeText(el.textContent);
+            // Catch common misspellings seen in the popup copy.
+            var looksLikeTarget =
+              t.indexOf("firsh") !== -1 ||
+              t.indexOf("first") !== -1 && (t.indexOf("your self") !== -1 || t.indexOf("yourself") !== -1) ||
+              t.indexOf("exepth") !== -1 ||
+              (t.indexOf("death") !== -1 && t.indexOf("certificate") !== -1 && (t.indexOf("except") !== -1 || t.indexOf("exempt") !== -1 || t.indexOf("exepth") !== -1));
+            if (!looksLikeTarget) continue;
+
+            // Replace only when the sentence is about choosing self vs another.
+            if (t.indexOf("yourself") !== -1 || t.indexOf("your self") !== -1 || t.indexOf("another") !== -1) {
+              el.textContent = "First, choose who this booking is for: yourself or someone else. (Death Certificate is exempt.)";
+            }
+          }
+        }
+
+        function tick() {
+          try { applyFix(document); } catch (e) {}
+        }
+
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          setTimeout(tick, 600);
+        } else {
+          document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 600); });
+        }
+
+        if (document.body) {
+          var mo = new MutationObserver(function (muts) {
+            for (var i = 0; i < muts.length; i++) {
+              var m = muts[i];
+              for (var j = 0; j < (m.addedNodes || []).length; j++) {
+                var n = m.addedNodes[j];
+                if (n && n.nodeType === 1) applyFix(n);
+              }
+            }
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        }
+      })();
+    </script>
+    <style>
+      .dio-archive-csv{margin:14px 0 0;padding:14px 14px 16px;border:1px solid rgba(148,163,184,.20);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.86));box-shadow:0 14px 40px rgba(2,6,23,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+      html[data-theme="dark"] .dio-archive-csv{background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(11,18,32,.74));border-color:rgba(148,163,184,.14);box-shadow:0 18px 65px rgba(0,0,0,.45)}
+      .dio-archive-csv__head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+      .dio-archive-csv__head h4{margin:0;font:950 12px/1 system-ui;letter-spacing:.14em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-archive-csv__head h4{color:#93c5fd}
+      .dio-archive-csv__btn{appearance:none;border:1px solid rgba(37,99,235,.35);background:rgba(37,99,235,.10);color:#1d4ed8;border-radius:12px;padding:10px 12px;font:900 12px/1 system-ui;cursor:pointer}
+      .dio-archive-csv__btn:hover{background:rgba(37,99,235,.14);border-color:rgba(37,99,235,.55)}
+      html[data-theme="dark"] .dio-archive-csv__btn{color:#bfdbfe;border-color:rgba(96,165,250,.28);background:rgba(37,99,235,.14)}
+      .dio-archive-csv__meta{color:#475569;font:700 12px/1.4 system-ui}
+      html[data-theme="dark"] .dio-archive-csv__meta{color:#94a3b8}
+    </style>
+    <script>
+      // Parish Archive: auto-save to localStorage + export Excel-friendly CSV.
+      (function () {
+        if (window.__dioArchiveCsv) return;
+        window.__dioArchiveCsv = true;
+
+        var SESSION_KEY = "diocese-dashboard-db-session";
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e) {}
+          return null;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase();
+        }
+        function parishId() {
+          var s = getSession() || {};
+          return String(s.parish_id || (s.user && (s.user.parish_id || (s.user.user_metadata && s.user.user_metadata.parish_id))) || "");
+        }
+        function cacheKey() {
+          return "parish-archive-cache:" + (parishId() || "unknown");
+        }
+
+        function pushCache(row) {
+          if (!row) return;
+          try {
+            var key = cacheKey();
+            var arr = [];
+            try { arr = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { arr = []; }
+            if (!Array.isArray(arr)) arr = [];
+            // Keep last 200 items.
+            arr.unshift(row);
+            if (arr.length > 200) arr = arr.slice(0, 200);
+            localStorage.setItem(key, JSON.stringify(arr));
+          } catch (e2) {}
+        }
+
+        // Hook fetch: detect archive inserts and cache them.
+        (function () {
+          if (window.__dioArchiveFetchWrapped) return;
+          window.__dioArchiveFetchWrapped = true;
+          var _fetch = window.fetch;
+          window.fetch = function (input, init) {
+            var url = (typeof input === "string") ? input : (input && input.url) || "";
+            var method = (init && init.method) ? String(init.method).toUpperCase() : "GET";
+            var p = _fetch.apply(this, arguments);
+            try {
+              if (role() === "parish" && method === "POST" && url.indexOf("/rest/v1/diocese_archive_records") !== -1) {
+                p.then(function (res) {
+                  try {
+                    if (!res || !res.ok) return;
+                    var c = res.clone();
+                    c.json().then(function (data) {
+                      // PostgREST returns array for inserts; accept object too.
+                      var row = Array.isArray(data) ? data[0] : data;
+                      if (row) pushCache(row);
+                    }).catch(function(){});
+                  } catch (e) {}
+                });
+              }
+            } catch (e2) {}
+            return p;
+          };
+        })();
+
+        function findArchiveHost() {
+          var heads = document.querySelectorAll("h1,h2,h3,h4");
+          for (var i = 0; i < heads.length; i++) {
+            var t = (heads[i].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+            // Only match the actual archive screen title (avoid generic "Records" matches).
+            if (t === "archive" || t === "archiving" || t === "archive records" || t === "archiving records" || t.indexOf("archive") !== -1) {
+              return heads[i].closest("main") ||
+                     heads[i].closest("[class*='scene']") ||
+                     heads[i].closest("[class*='dashboard']") ||
+                     document.getElementById("root");
+            }
+          }
+          return null;
+        }
+
+        function cleanupIfLeft() {
+          // Remove panel when leaving archive screen.
+          if (findArchiveHost()) return;
+          var panels = document.querySelectorAll(".dio-archive-csv");
+          for (var i = 0; i < panels.length; i++) {
+            var el = panels[i];
+            if (el && el.parentElement) el.parentElement.removeChild(el);
+          }
+        }
+
+        function csvEscape(v) {
+          var s = v == null ? "" : String(v);
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        function downloadCsv(name, rows) {
+          rows = Array.isArray(rows) ? rows : [];
+          if (!rows.length) return;
+          var keys = Object.keys(rows[0]);
+          var lines = [keys.map(csvEscape).join(",")];
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i] || {};
+            lines.push(keys.map(function (k) { return csvEscape(r[k]); }).join(","));
+          }
+          var blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 1200);
+        }
+
+        function mount() {
+          if (role() !== "parish") return;
+          var host = findArchiveHost();
+          if (!host) { cleanupIfLeft(); return; }
+          if (host.querySelector(".dio-archive-csv")) return;
+          var wrap = document.createElement("div");
+          wrap.className = "dio-archive-csv";
+          wrap.innerHTML =
+            '<div class="dio-archive-csv__head">' +
+              '<h4>Archive Excel</h4>' +
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+                '<button type="button" class="dio-archive-csv__btn" data-archive-dl>Download CSV (Excel)</button>' +
+                '<button type="button" class="dio-archive-csv__btn" data-archive-clear>Clear local cache</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dio-archive-csv__meta" data-archive-meta>Auto-saves new archive records in this browser.</div>';
+          if (host.firstChild) host.insertBefore(wrap, host.firstChild);
+          else host.appendChild(wrap);
+
+          function getCache() {
+            try { return JSON.parse(localStorage.getItem(cacheKey()) || "[]"); } catch (e) { return []; }
+          }
+          function setMeta() {
+            var m = wrap.querySelector("[data-archive-meta]");
+            if (!m) return;
+            var rows = getCache();
+            m.textContent = "Auto-saves new archive records in this browser. Cached rows: " + (rows.length || 0) + ".";
+          }
+          setMeta();
+
+          wrap.querySelector("[data-archive-dl]").addEventListener("click", function () {
+            var rows = getCache();
+            if (!rows.length) { window.alert("No archived records cached yet. Create/archive a record first."); return; }
+            // Pick a stable subset of columns that Excel opens nicely.
+            var out = rows.map(function (r) {
+              return {
+                id: r.id || "",
+                record_type: r.record_type || r.type || "",
+                full_name: r.full_name || [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(" "),
+                church: r.church || "",
+                register_no: r.register_no || "",
+                page_no: r.page_no || "",
+                line_no: r.line_no || "",
+                service_date: r.service_date || "",
+                created_at: r.created_at || "",
+                scanned_file_url: r.scanned_file_url || ""
+              };
+            });
+            downloadCsv("parish-archive-records.csv", out);
+          });
+
+          wrap.querySelector("[data-archive-clear]").addEventListener("click", function () {
+            try { localStorage.removeItem(cacheKey()); } catch (e) {}
+            setMeta();
+          });
+        }
+
+        function tick() { try { mount(); } catch (e) {} }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function(){ setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function(){ setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <style>
+      .dio-reports-export{margin:14px 0 0;padding:14px 14px 16px;border:1px solid rgba(148,163,184,.20);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.86));box-shadow:0 14px 40px rgba(2,6,23,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+      html[data-theme="dark"] .dio-reports-export{background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(11,18,32,.74));border-color:rgba(148,163,184,.14);box-shadow:0 18px 65px rgba(0,0,0,.45)}
+      .dio-reports-export__head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+      .dio-reports-export__head h4{margin:0;font:950 12px/1 system-ui;letter-spacing:.14em;text-transform:uppercase;color:#1d4ed8}
+      html[data-theme="dark"] .dio-reports-export__head h4{color:#93c5fd}
+      .dio-reports-export__btn{appearance:none;border:1px solid rgba(37,99,235,.35);background:rgba(37,99,235,.10);color:#1d4ed8;border-radius:12px;padding:10px 12px;font:900 12px/1 system-ui;cursor:pointer}
+      .dio-reports-export__btn:hover{background:rgba(37,99,235,.14);border-color:rgba(37,99,235,.55)}
+      .dio-reports-export__btn[disabled]{opacity:.55;cursor:not-allowed}
+      html[data-theme="dark"] .dio-reports-export__btn{color:#bfdbfe;border-color:rgba(96,165,250,.28);background:rgba(37,99,235,.14)}
+      .dio-reports-export__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      @media (max-width: 760px){.dio-reports-export__grid{grid-template-columns:1fr}}
+      .dio-reports-export__meta{margin-top:8px;color:#475569;font:700 12px/1.4 system-ui}
+      html[data-theme="dark"] .dio-reports-export__meta{color:#94a3b8}
+    </style>
+    <script>
+      // Reports Center: fix unclickable export buttons by injecting working export actions.
+      (function () {
+        if (window.__dioReportsExportFix) return;
+        window.__dioReportsExportFix = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e2) {}
+          return null;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase();
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function restGet(table, params) {
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function (k) {
+            if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((d && d.message) || t || ("HTTP " + r.status));
+              return Array.isArray(d) ? d : [];
+            });
+          });
+        }
+        function csvEscape(v) {
+          var s = v == null ? "" : String(v);
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        function downloadCsv(name, rows) {
+          rows = Array.isArray(rows) ? rows : [];
+          if (!rows.length) { window.alert("No rows to export."); return; }
+          var keys = Object.keys(rows[0] || {});
+          var lines = [keys.map(csvEscape).join(",")];
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i] || {};
+            lines.push(keys.map(function (k) { return csvEscape(r[k]); }).join(","));
+          }
+          var blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 1200);
+        }
+
+        function findReportsHost() {
+          var heads = document.querySelectorAll("h1,h2,h3,h4");
+          for (var i = 0; i < heads.length; i++) {
+            var t = (heads[i].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+            if (t === "reports center" || t.indexOf("reports center") !== -1) {
+              return heads[i].closest("main") ||
+                     heads[i].closest("[class*='scene']") ||
+                     heads[i].closest("[class*='dashboard']") ||
+                     document.getElementById("root");
+            }
+          }
+          return null;
+        }
+
+        function cleanupIfLeft() {
+          if (findReportsHost()) return;
+          var panels = document.querySelectorAll(".dio-reports-export");
+          for (var i = 0; i < panels.length; i++) {
+            var el = panels[i];
+            if (el && el.parentElement) el.parentElement.removeChild(el);
+          }
+        }
+
+        function fetchAll(table, select, orderCol) {
+          var page = 0;
+          var pageSize = 1000;
+          var maxRows = 20000;
+          var all = [];
+          function step() {
+            return restGet(table, {
+              select: select,
+              order: (orderCol || "created_at") + ".desc",
+              limit: pageSize,
+              offset: page * pageSize
+            }).then(function (rows) {
+              rows = Array.isArray(rows) ? rows : [];
+              all = all.concat(rows);
+              if (rows.length < pageSize) return all;
+              if ((page + 1) * pageSize >= maxRows) return all;
+              page += 1;
+              return step();
+            });
+          }
+          return step();
+        }
+
+        function mount() {
+          if (role() !== "diocese") return;
+          var host = findReportsHost();
+          if (!host) { cleanupIfLeft(); return; }
+          if (host.querySelector(".dio-reports-export")) return;
+
+          var wrap = document.createElement("div");
+          wrap.className = "dio-reports-export";
+          wrap.innerHTML =
+            '<div class="dio-reports-export__head">' +
+              '<h4>Export Actions (fixed)</h4>' +
+              '<div class="dio-reports-export__grid">' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="bookings">Export service booking rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="parishes">Export parish rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="priests">Export priest rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="users">Export user rows</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dio-reports-export__meta" data-exp-meta>Downloads CSV that opens in Excel.</div>';
+
+          if (host.firstChild) host.insertBefore(wrap, host.firstChild);
+          else host.appendChild(wrap);
+
+          function setBusy(btn, busy) {
+            btn.disabled = !!busy;
+            btn.textContent = busy ? "Exporting…" : btn.getAttribute("data-label");
+          }
+          var btns = wrap.querySelectorAll("[data-exp]");
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute("data-label", btns[i].textContent);
+          }
+
+          wrap.addEventListener("click", function (e) {
+            var btn = e.target && e.target.closest && e.target.closest("[data-exp]");
+            if (!btn) return;
+            var kind = btn.getAttribute("data-exp");
+            setBusy(btn, true);
+            var p;
+            if (kind === "bookings") {
+              p = fetchAll("diocese_service_bookings", "id,reference_number,parish_id,parish_name,client_name,service_name,booking_status,booking_date,booking_time,cost,payment_method,payment_amount,payment_fee,payment_total,booked_by,created_at,updated_at", "created_at")
+                .then(function (rows) { downloadCsv("service-bookings.csv", rows); });
+            } else if (kind === "parishes") {
+              p = fetchAll("parishes", "id,parish_name,address,city,province,contact_number,email,created_at,updated_at", "parish_name")
+                .then(function (rows) { downloadCsv("parishes.csv", rows); });
+            } else if (kind === "priests") {
+              p = fetchAll("parish_priests", "id,parish_id,parish_name,full_name,role,ministry,birthdate,civil_status,profile_picture_url,created_at,updated_at", "created_at")
+                .then(function (rows) { downloadCsv("parish-priests.csv", rows); });
+            } else {
+              p = fetchAll("registered_users", "id,parish_id,parish_name,full_name,email,phone_number,birthdate,address,civil_status,profile_picture_url,created_at,updated_at", "created_at")
+                .then(function (rows) { downloadCsv("registered-users.csv", rows); });
+            }
+            Promise.resolve(p).catch(function (err) {
+              window.alert("Export failed: " + (err && err.message ? err.message : err));
+            }).finally(function () {
+              setBusy(btn, false);
+            });
+          });
+        }
+
+        function tick(){ try { mount(); } catch(e) {} }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function(){ setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function(){ setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <script>
+      // Prevent booking/events on past dates (all dashboards).
+      (function () {
+        if (window.__dioNoPastBookingDates) return;
+        window.__dioNoPastBookingDates = true;
+
+        function todayStartLocal() {
+          var n = new Date();
+          return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+        }
+        function parseYmd(s) {
+          if (!s) return null;
+          var m = String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+          if (!m) return null;
+          var y = Number(m[1]), mo = Number(m[2]) - 1, d = Number(m[3]);
+          var dt = new Date(y, mo, d);
+          if (isNaN(dt.getTime())) return null;
+          return dt;
+        }
+        function pickDate(payload) {
+          if (!payload || typeof payload !== "object") return null;
+          return (
+            payload.booking_date ||
+            payload.service_date ||
+            payload.event_date ||
+            payload.date ||
+            (payload.data && (payload.data.booking_date || payload.data.service_date || payload.data.event_date || payload.data.date)) ||
+            null
+          );
+        }
+        function isPastDate(dateVal) {
+          var dt = parseYmd(dateVal);
+          if (!dt) return false;
+          return dt.getTime() < todayStartLocal().getTime();
+        }
+        function errResponse(msg) {
+          try {
+            return new Response(JSON.stringify({ message: msg }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" }
+            });
+          } catch (e) {
+            return new Response(msg, { status: 400 });
+          }
+        }
+
+        var _fetch = window.fetch;
+        window.fetch = function (input, init) {
+          var url = (typeof input === "string") ? input : (input && input.url) || "";
+          var method = (init && init.method) ? String(init.method).toUpperCase() : "GET";
+          // Only guard write calls to bookings/events endpoints.
+          var isWrite = method === "POST" || method === "PUT" || method === "PATCH";
+          var isTarget =
+            url.indexOf("/rest/v1/diocese_service_bookings") !== -1 ||
+            url.indexOf("/rest/v1/parish_events") !== -1 ||
+            url.indexOf("/rest/v1/parish_appointment_slots") !== -1;
+
+          if (isWrite && isTarget) {
+            try {
+              var body = init && init.body;
+              if (typeof body === "string" && body.length) {
+                var parsed = null;
+                try { parsed = JSON.parse(body); } catch (e1) { parsed = null; }
+                // PostgREST insert can be object or array of objects
+                var payload = Array.isArray(parsed) ? (parsed[0] || null) : parsed;
+                var dval = pickDate(payload);
+                if (isPastDate(dval)) {
+                  var msg = "You cannot book an event or service on a past date. Please select today or a future date.";
+                  try { window.alert(msg); } catch (e2) {}
+                  return Promise.resolve(errResponse(msg));
+                }
+              }
+            } catch (e3) {}
+          }
+          return _fetch.apply(this, arguments);
+        };
+      })();
+    </script>
+    <style>
+      .dio-parish-dd{display:grid;gap:6px}
+      .dio-parish-dd label{font:800 12px/1.2 system-ui;color:var(--text-dim,#475569)}
+      html[data-theme="dark"] .dio-parish-dd label{color:#94a3b8}
+      .dio-parish-dd select,.dio-parish-dd input{
+        width:100%;
+        border:1px solid rgba(148,163,184,.35);
+        border-radius:12px;
+        padding:10px 12px;
+        font:800 13px/1.2 system-ui;
+        background:#fff;
+        color:#0f172a;
+      }
+      html[data-theme="dark"] .dio-parish-dd select,
+      html[data-theme="dark"] .dio-parish-dd input{background:#0b1220;color:#e2e8f0;border-color:rgba(148,163,184,.22)}
+      .dio-parish-dd small{font:700 12px/1.35 system-ui;color:var(--text-dim,#64748b)}
+      html[data-theme="dark"] .dio-parish-dd small{color:#94a3b8}
+    </style>
+    <style>
+      .dio-pay-dd{display:grid;gap:10px;margin-top:10px}
+      .dio-pay-dd__row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+      @media (max-width: 720px){.dio-pay-dd__row{grid-template-columns:1fr}}
+      .dio-pay-dd label{font:850 12px/1.2 system-ui;color:var(--text-dim,#475569)}
+      html[data-theme="dark"] .dio-pay-dd label{color:#94a3b8}
+      .dio-pay-dd select,.dio-pay-dd input{
+        width:100%;
+        border:1px solid rgba(148,163,184,.35);
+        border-radius:12px;
+        padding:10px 12px;
+        font:850 13px/1.2 system-ui;
+        background:#fff;
+        color:#0f172a;
+      }
+      html[data-theme="dark"] .dio-pay-dd select,
+      html[data-theme="dark"] .dio-pay-dd input{background:#0b1220;color:#e2e8f0;border-color:rgba(148,163,184,.22)}
+      .dio-pay-dd small{font:700 12px/1.35 system-ui;color:var(--text-dim,#64748b)}
+      html[data-theme="dark"] .dio-pay-dd small{color:#94a3b8}
+    </style>
+    <script>
+      // Booking form: Parish Name dropdown (all parishes).
+      (function () {
+        if (window.__dioParishDropdown) return;
+        window.__dioParishDropdown = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+        var parishCache = null;
+        var parishCacheAt = 0;
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e) {}
+          return null;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase();
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function restGet(table, params) {
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function (k) {
+            if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((d && d.message) || t || ("HTTP " + r.status));
+              return Array.isArray(d) ? d : [];
+            });
+          });
+        }
+        function loadParishes() {
+          var now = Date.now();
+          if (parishCache && (now - parishCacheAt) < 5 * 60 * 1000) return Promise.resolve(parishCache);
+          return restGet("parishes", { select: "id,parish_name", order: "parish_name.asc", limit: 10000 })
+            .then(function (rows) {
+              parishCache = (rows || []).filter(function (p) { return p && p.id && p.parish_name; });
+              parishCacheAt = Date.now();
+              return parishCache;
+            }).catch(function () { return []; });
+        }
+
+        function findParishField(container) {
+          container = container || document;
+          // Look for a select/input commonly used for parish_name.
+          var candidates = container.querySelectorAll("select, input");
+          for (var i = 0; i < candidates.length; i++) {
+            var el = candidates[i];
+            // Skip already-enhanced/hidden original inputs.
+            if (el && (el.getAttribute("data-dio-parish-hidden") === "1" || el.getAttribute("data-dio-parish-enhanced") === "1")) continue;
+            var name = String(el.getAttribute("name") || "").toLowerCase();
+            var id = String(el.id || "").toLowerCase();
+            var ph = String(el.getAttribute("placeholder") || "").toLowerCase();
+            var aria = String(el.getAttribute("aria-label") || "").toLowerCase();
+            if (name === "parish_name" || name === "parish" || id.indexOf("parish") !== -1 || ph.indexOf("parish") !== -1 || aria.indexOf("parish") !== -1) {
+              // Don't re-wrap our own injected select.
+              if (el.closest(".dio-parish-dd")) continue;
+              return el;
+            }
+          }
+          return null;
+        }
+
+        function mountDropdown(field) {
+          if (!field || field.closest(".dio-parish-dd")) return;
+          if (field.getAttribute("data-dio-parish-enhanced") === "1") return;
+          field.setAttribute("data-dio-parish-enhanced", "1");
+
+          // Parish staff should not change parish; diocese can choose any.
+          var r = role();
+          var isParishStaff = r === "parish";
+
+          var wrap = document.createElement("div");
+          wrap.className = "dio-parish-dd";
+          var label = document.createElement("label");
+          label.textContent = "Parish Name";
+          var sel = document.createElement("select");
+          sel.innerHTML = '<option value="">Select a parish…</option>';
+          var hint = document.createElement("small");
+          hint.textContent = isParishStaff ? "Parish accounts are locked to their parish." : "Choose the parish for this booking.";
+
+          // Keep original field but hide it; sync values.
+          field.style.display = "none";
+          field.setAttribute("data-dio-parish-hidden", "1");
+
+          wrap.appendChild(label);
+          wrap.appendChild(sel);
+          wrap.appendChild(hint);
+
+          field.parentElement.insertBefore(wrap, field);
+
+          function setOriginal(val) {
+            try { field.value = val; } catch (e) {}
+            try { field.dispatchEvent(new Event("input", { bubbles: true })); } catch (e2) {}
+            try { field.dispatchEvent(new Event("change", { bubbles: true })); } catch (e3) {}
+          }
+
+          loadParishes().then(function (rows) {
+            var cur = String(field.value || "").trim();
+            for (var i = 0; i < rows.length; i++) {
+              var p = rows[i];
+              var opt = document.createElement("option");
+              opt.value = p.parish_name;
+              opt.textContent = p.parish_name;
+              if (cur && cur.toLowerCase() === String(p.parish_name).toLowerCase()) opt.selected = true;
+              sel.appendChild(opt);
+            }
+            if (!sel.value && cur) sel.value = cur;
+
+            if (isParishStaff) {
+              // Lock to current value if any.
+              sel.disabled = true;
+            }
+            // Ensure original has the selected parish name.
+            setOriginal(sel.value || cur || "");
+          });
+
+          sel.addEventListener("change", function () {
+            setOriginal(sel.value || "");
+          });
+        }
+
+        function isLoginScreen() {
+          try {
+            var h = String(location.hash || "").replace(/^#/, "").toLowerCase();
+            if (!h || h === "login") return true;
+          } catch (e) {}
+          // DOM hint
+          return !!document.querySelector(".scene--login");
+        }
+
+        function looksLikeBookingForm() {
+          // Only inject when a booking/certificate form is present.
+          if (document.querySelector(".certificate-booking-modal__dialog, .certificate-booking-modal")) return true;
+          // Heuristics: booking forms have service_name + booking_date fields somewhere.
+          var hasService = !!document.querySelector("[name='service_name'], [id*='service'], [aria-label*='Service'], [aria-label*='service']");
+          var hasDate = !!document.querySelector("[name='booking_date'], [id*='booking_date'], [aria-label*='Booking Date'], [aria-label*='booking date']");
+          return hasService && hasDate;
+        }
+
+        function cleanupIfWrongScreen() {
+          // Remove injected dropdowns and restore hidden originals (e.g., login page).
+          var wraps = document.querySelectorAll(".dio-parish-dd");
+          for (var i = 0; i < wraps.length; i++) {
+            var w = wraps[i];
+            // Only remove our injected wrapper that contains a <select>.
+            try {
+              if (w && w.querySelector("select")) {
+                if (w.parentElement) w.parentElement.removeChild(w);
+              }
+            } catch (e) {}
+          }
+          var hidden = document.querySelectorAll("[data-dio-parish-hidden='1']");
+          for (var j = 0; j < hidden.length; j++) {
+            var f = hidden[j];
+            try { f.style.display = ""; } catch (e2) {}
+            try { f.removeAttribute("data-dio-parish-hidden"); } catch (e3) {}
+            try { f.removeAttribute("data-dio-parish-enhanced"); } catch (e4) {}
+          }
+        }
+
+        function tick() {
+          if (isLoginScreen() || !looksLikeBookingForm()) {
+            cleanupIfWrongScreen();
+            return;
+          }
+          var f = findParishField(document);
+          if (f) mountDropdown(f);
+        }
+
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function () { setTimeout(tick, 900); });
+        setInterval(tick, 3500);
+      })();
+    </script>
+    <script>
+      // Booking form: Payment Method + Baptismal pricing (GCash/Personal; 520+80=600 for Baptismal).
+      (function () {
+        if (window.__dioPaymentFields) return;
+        window.__dioPaymentFields = true;
+
+        function norm(s){return String(s||"").toLowerCase();}
+        function isBaptismal(serviceName){ return norm(serviceName).indexOf("baptism") !== -1; }
+        function ensureNumber(x){
+          var n = Number(x);
+          return isFinite(n) ? n : 0;
+        }
+
+        function findServiceNameField(root){
+          root = root || document;
+          var els = root.querySelectorAll("select, input");
+          for (var i=0;i<els.length;i++){
+            var el = els[i];
+            var name = norm(el.getAttribute("name")||"");
+            var id = norm(el.id||"");
+            var aria = norm(el.getAttribute("aria-label")||"");
+            if (name === "service_name" || id.indexOf("service") !== -1 || aria.indexOf("service") !== -1) return el;
+          }
+          return null;
+        }
+
+        function mount(root){
+          root = root || document;
+
+          // Prefer mounting inside the Certificate Booking popup/modal.
+          var modal = root.querySelector(".certificate-booking-modal__dialog") ||
+                      root.querySelector(".certificate-booking-modal") ||
+                      null;
+          // Only show payment fields inside the booking popup (avoid redundancy on service list screens).
+          if (!modal) return;
+          if (modal.querySelector("[data-dio-pay-mounted='1']")) return;
+
+          // Anchor order:
+          // 1) inside certificate modal: after the Parish Name field (or certificate details section)
+          // 2) otherwise: after parish dropdown
+          // 3) otherwise: near service_name
+          var anchor = null;
+          if (modal) {
+            anchor = modal.querySelector(".dio-parish-dd") ||
+                     modal.querySelector("[name='parish_name']") ||
+                     modal.querySelector("[id*='parish']") ||
+                     modal.querySelector(".certificate-booking-modal__fields") ||
+                     modal;
+          } else {
+            anchor = root.querySelector(".dio-parish-dd") || null;
+            if (!anchor) {
+              var svc = findServiceNameField(root);
+              if (svc) anchor = svc.closest("form") || svc.parentElement;
+            }
+          }
+          if (!anchor || !anchor.parentElement) return;
+
+          var wrap = document.createElement("div");
+          wrap.className = "dio-pay-dd";
+          wrap.setAttribute("data-dio-pay-mounted","1");
+
+          wrap.innerHTML =
+            '<div class="dio-pay-dd__row">' +
+              '<div class="dio-parish-dd"><label>Payment Method</label>' +
+                '<select data-pay-method>' +
+                  '<option value="">Select…</option>' +
+                  '<option value="gcash">GCash</option>' +
+                  '<option value="personal">Personal payment</option>' +
+                '</select>' +
+                '<small>Choose how the client will pay.</small>' +
+              '</div>' +
+              '<div class="dio-parish-dd"><label>Amount</label><input data-pay-amount inputmode="decimal" placeholder="0.00" /></div>' +
+              '<div class="dio-parish-dd"><label>Fee</label><input data-pay-fee inputmode="decimal" placeholder="0.00" /></div>' +
+            '</div>' +
+            '<div class="dio-parish-dd"><label>Total</label><input data-pay-total inputmode="decimal" placeholder="0.00" /></div>' +
+            '<small>Baptismal: amount 520. GCash fee 80 (total 600). Personal payment has no fee.</small>';
+
+          // Insert right after anchor where possible; if anchor is a container, prepend inside.
+          if (anchor.classList && anchor.classList.contains("certificate-booking-modal__fields")) {
+            anchor.appendChild(wrap);
+          } else {
+            anchor.parentElement.insertBefore(wrap, anchor.nextSibling);
+          }
+
+          var methodEl = wrap.querySelector("[data-pay-method]");
+          var amtEl = wrap.querySelector("[data-pay-amount]");
+          var feeEl = wrap.querySelector("[data-pay-fee]");
+          var totEl = wrap.querySelector("[data-pay-total]");
+
+          function refreshPricing(){
+            var scope = modal || document;
+            var svc = findServiceNameField(scope) || findServiceNameField(document);
+            var bapt = svc && isBaptismal(svc.value || "");
+            var pm = String(methodEl.value || "").toLowerCase();
+            var isPersonal = pm === "personal";
+            if (bapt) {
+              amtEl.value = "520";
+              feeEl.value = isPersonal ? "0" : "80";
+              totEl.value = isPersonal ? "520" : "600";
+              amtEl.disabled = true;
+              feeEl.disabled = true;
+              totEl.disabled = true;
+            } else {
+              amtEl.disabled = false;
+              // Personal payment -> fee forced to 0 (no fee)
+              if (isPersonal) {
+                feeEl.value = "0";
+                feeEl.disabled = true;
+              } else {
+                feeEl.disabled = false;
+              }
+              totEl.disabled = true;
+              var a = ensureNumber(amtEl.value);
+              var f = ensureNumber(feeEl.value);
+              totEl.value = String((a+f).toFixed(2));
+            }
+          }
+
+          // Recompute total on edit.
+          amtEl.addEventListener("input", refreshPricing);
+          feeEl.addEventListener("input", refreshPricing);
+          methodEl.addEventListener("change", refreshPricing);
+
+          // Watch service changes (if any).
+          var svc0 = findServiceNameField(modal || document);
+          if (svc0) svc0.addEventListener("change", refreshPricing);
+          refreshPricing();
+
+          // Inject into booking save payload (PostgREST JSON body).
+          if (!window.__dioPaymentFetchWrapped) {
+            window.__dioPaymentFetchWrapped = true;
+            var _fetch = window.fetch;
+            window.fetch = function(input, init){
+              var url = (typeof input === "string") ? input : (input && input.url) || "";
+              var method = (init && init.method) ? String(init.method).toUpperCase() : "GET";
+              var isWrite = method === "POST" || method === "PATCH" || method === "PUT";
+              if (isWrite && url.indexOf("/rest/v1/diocese_service_bookings") !== -1 && init && typeof init.body === "string") {
+                try{
+                  var parsed = JSON.parse(init.body);
+                  var payload = Array.isArray(parsed) ? (parsed[0] || {}) : (parsed || {});
+                  var svc = payload.service_name || "";
+                  var bapt = isBaptismal(svc);
+                  var pm = (methodEl && methodEl.value) ? String(methodEl.value) : (payload.payment_method || "");
+                  if (pm) payload.payment_method = pm;
+                  var isPersonal = String(pm || "").toLowerCase() === "personal";
+                  if (bapt) {
+                    payload.payment_amount = 520;
+                    payload.payment_fee = isPersonal ? 0 : 80;
+                    payload.payment_total = isPersonal ? 520 : 600;
+                  } else {
+                    var a = ensureNumber(payload.payment_amount != null ? payload.payment_amount : (amtEl && amtEl.value));
+                    var f = isPersonal ? 0 : ensureNumber(payload.payment_fee != null ? payload.payment_fee : (feeEl && feeEl.value));
+                    if (a || f) {
+                      payload.payment_amount = a;
+                      payload.payment_fee = f;
+                      payload.payment_total = a + f;
+                    }
+                  }
+                  var out = Array.isArray(parsed) ? [payload] : payload;
+                  init = Object.assign({}, init, { body: JSON.stringify(out) });
+                } catch(e){}
+              }
+              return _fetch.call(this, input, init);
+            };
+          }
+        }
+
+        function tick(){ try { mount(document); } catch(e){} }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function(){ setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function(){ setTimeout(tick, 900); });
+        setInterval(tick, 3500);
       })();
     </script>
   </body>

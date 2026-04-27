@@ -127,40 +127,60 @@ declare
   v_parish_id uuid;
   v_email text := lower(coalesce(new.email, ''));
   v_full_name text := coalesce(
-    new.raw_user_meta_data ->> 'full_name',
-    new.raw_user_meta_data ->> 'name',
-    null
+    nullif(btrim(new.raw_user_meta_data ->> 'full_name'), ''),
+    nullif(btrim(new.raw_user_meta_data ->> 'name'), ''),
+    nullif(btrim(new.raw_user_meta_data ->> 'fullName'), ''),
+    nullif(split_part(v_email, '@', 1), ''),
+    'Member'
   );
 begin
-  if v_email = '' then
-    return new;
-  end if;
+  -- Never block signup. If profile creation fails, allow auth.users row anyway.
+  begin
+    if v_email = '' then
+      return new;
+    end if;
 
-  v_parish_id := public.resolve_parish_id_for_auth_user(new.id);
+    v_parish_id := public.resolve_parish_id_for_auth_user(new.id);
 
-  -- Only touch a row if it already exists, or create one when parish_id is known.
-  if exists (select 1 from public.registered_users where lower(email) = v_email) then
-    update public.registered_users
-       set parish_id = coalesce(parish_id, v_parish_id)
-     where lower(email) = v_email
-       and parish_id is null
-       and v_parish_id is not null;
-  elsif v_parish_id is not null then
+    -- Make this idempotent: client may also create the registered_users row.
+    -- Always key the profile row by auth.users.id (primary key), and upsert.
     begin
-      insert into public.registered_users (email, full_name, parish_id)
-      values (v_email, v_full_name, v_parish_id);
+      insert into public.registered_users (id, email, full_name, parish_id)
+      values (new.id, v_email, v_full_name, v_parish_id)
+      on conflict (id) do update
+        set email = excluded.email,
+            full_name = coalesce(public.registered_users.full_name, excluded.full_name),
+            parish_id = coalesce(public.registered_users.parish_id, excluded.parish_id);
     exception
+      when unique_violation then
+        -- If a legacy row already exists with the same email, merge into it.
+        update public.registered_users
+           set id = new.id,
+               full_name = coalesce(public.registered_users.full_name, v_full_name),
+               parish_id = coalesce(public.registered_users.parish_id, v_parish_id)
+         where lower(email) = v_email;
       when undefined_column then
         -- Fall back for schemas that don't have full_name.
-        insert into public.registered_users (email, parish_id)
-        values (v_email, v_parish_id);
-      when unique_violation then
-        update public.registered_users
-           set parish_id = coalesce(parish_id, v_parish_id)
-         where lower(email) = v_email
-           and parish_id is null;
+        begin
+          insert into public.registered_users (id, email, parish_id)
+          values (new.id, v_email, v_parish_id)
+          on conflict (id) do update
+            set email = excluded.email,
+                parish_id = coalesce(public.registered_users.parish_id, excluded.parish_id);
+        exception
+          when unique_violation then
+            update public.registered_users
+               set id = new.id,
+                   parish_id = coalesce(public.registered_users.parish_id, v_parish_id)
+             where lower(email) = v_email;
+        end;
     end;
-  end if;
+  exception
+    when others then
+      -- Intentionally swallow any error to prevent /auth/v1/signup from returning 500.
+      -- (You can inspect Postgres logs in Supabase to see the original error.)
+      return new;
+  end;
 
   return new;
 end;
