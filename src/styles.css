@@ -5188,6 +5188,32 @@ html[data-theme="dark"] .action-link {
   white-space: nowrap;
 }
 
+.parish-booking-decline {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  white-space: nowrap;
+  border-color: rgba(239, 68, 68, 0.42);
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.parish-booking-decline:hover:not(:disabled) {
+  border-color: rgba(220, 38, 38, 0.55);
+  background: rgba(239, 68, 68, 0.11);
+}
+
+.parish-booking-decline:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+html[data-theme="dark"] .parish-booking-decline {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.38);
+  background: rgba(127, 29, 29, 0.18);
+}
+
 .parish-booking-copy:disabled {
   cursor: not-allowed;
   opacity: 0.58;

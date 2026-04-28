@@ -96,9 +96,958 @@
         } catch (e) {}
       })();
     </script>
-    <script type="module" crossorigin src="/dist/assets/index-v20260422157000.js?v=reports-center-analytics-20260427-12"></script>
+    <script type="module" crossorigin src="/dist/assets/index-v20260422157000.js?v=parish-decline-reinject-20260428"></script>
     <link rel="stylesheet" crossorigin href="/dist/assets/index-yReDnWMe.css">
     <link rel="stylesheet" href="/dist/assets/sidebar-brand-responsive.css?v=notification-dark-1">
+    <style id="clergy-roster-cards">
+      .detail-list--stack .detail-list__item--stack > .status-badge,
+      .dio-clergy-roster .detail-list__item--stack > .status-badge {
+        display: none !important;
+      }
+      .dio-clergy-roster .detail-list--stack {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px !important;
+      }
+      .dio-clergy-roster .detail-list__item--stack {
+        position: relative;
+        min-height: 132px;
+        padding: 20px !important;
+        display: grid !important;
+        align-items: center;
+        overflow: hidden;
+        border: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-radius: 18px !important;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(37, 99, 235, .12), transparent 34%),
+          linear-gradient(135deg, rgba(255,255,255,.96), rgba(248,250,252,.88)) !important;
+        box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10);
+        cursor: pointer;
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+      }
+      .dio-clergy-roster .detail-list__item--stack:hover {
+        transform: translateY(-3px);
+        border-color: rgba(37, 99, 235, .24) !important;
+        box-shadow: 0 24px 54px rgba(15, 23, 42, 0.15);
+      }
+      .dio-clergy-roster .detail-list__item--stack:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 3px;
+      }
+      .dio-clergy-roster .detail-list__item--stack + .detail-list__item--stack {
+        border-top: 1px solid rgba(22, 53, 84, 0.14) !important;
+      }
+      .dio-clergy-roster .detail-list__item--stack::before {
+        content: "FR";
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        width: 54px;
+        height: 54px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        color: #1d4ed8;
+        background: linear-gradient(135deg, #eef6ff, #dbeafe);
+        border: 1px solid rgba(37, 99, 235, .16);
+        box-shadow: inset 0 1px rgba(255,255,255,.9), 0 10px 24px rgba(37,99,235,.16);
+        font: 950 14px/1 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-clergy-roster .detail-list__item--stack::after {
+        content: "View details";
+        position: absolute;
+        right: 18px;
+        bottom: 14px;
+        color: #64748b;
+        font: 850 11px/1 system-ui, Segoe UI, sans-serif;
+        opacity: .86;
+      }
+      .dio-clergy-roster .detail-list__meta {
+        gap: 8px !important;
+        min-width: 0;
+        margin-left: 74px !important;
+        padding-right: 94px;
+      }
+      .dio-clergy-roster .detail-list__meta strong {
+        color: #0f172a !important;
+        font-size: 1.08rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0 !important;
+      }
+      .dio-clergy-roster .detail-list__meta span {
+        width: fit-content;
+        min-height: 30px;
+        padding: 6px 11px;
+        display: inline-flex !important;
+        align-items: center;
+        border-radius: 999px;
+        color: #047857 !important;
+        background: #dff4eb;
+        font-size: .78rem !important;
+        font-weight: 900 !important;
+      }
+      html[data-theme="dark"] .dio-clergy-roster .detail-list__item--stack {
+        border-color: rgba(146,224,255,.18) !important;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(96, 165, 250, .18), transparent 34%),
+          linear-gradient(135deg, rgba(15, 23, 42, .86), rgba(30, 41, 59, .52)) !important;
+        box-shadow: 0 18px 34px rgba(3, 7, 16, .32);
+      }
+      html[data-theme="dark"] .dio-clergy-roster .detail-list__item--stack::before {
+        color: #dbeafe;
+        background: rgba(37, 99, 235, .22);
+        border-color: rgba(147, 197, 253, .32);
+      }
+      html[data-theme="dark"] .dio-clergy-roster .detail-list__item--stack::after {
+        color: #94a3b8;
+      }
+      html[data-theme="dark"] .dio-clergy-roster .detail-list__meta strong {
+        color: #ffffff !important;
+      }
+      html[data-theme="dark"] .dio-clergy-roster .detail-list__meta span {
+        color: #bbf7d0 !important;
+        background: rgba(22, 101, 52, .34);
+      }
+      .dio-priest-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483638;
+        padding: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(15, 23, 42, .50);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .dio-priest-modal__dialog {
+        width: min(640px, 100%);
+        max-height: min(720px, calc(100vh - 36px));
+        overflow: auto;
+        border: 1px solid rgba(255, 255, 255, .72);
+        border-radius: 22px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(37, 99, 235, .12), transparent 34%),
+          #ffffff;
+        color: #0f172a;
+        box-shadow: 0 34px 100px rgba(15, 23, 42, .38);
+      }
+      .dio-priest-modal__head {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: center;
+        padding: 22px;
+        border-bottom: 1px solid rgba(148, 163, 184, .22);
+      }
+      .dio-priest-modal__avatar {
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #1d4ed8;
+        background: linear-gradient(135deg, #eef6ff, #dbeafe);
+        border: 1px solid rgba(37, 99, 235, .16);
+        box-shadow: inset 0 1px rgba(255,255,255,.9), 0 14px 28px rgba(37,99,235,.16);
+        font: 950 17px/1 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-priest-modal__head h4 {
+        margin: 0;
+        color: #0f172a;
+        font: 950 1.28rem/1.18 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-priest-modal__head span {
+        display: block;
+        width: fit-content;
+        min-height: 30px;
+        margin-top: 8px;
+        padding: 6px 11px;
+        border-radius: 999px;
+        color: #475569;
+        background: #f1f5f9;
+        font: 900 .8rem/1.25 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-priest-modal__close {
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(148, 163, 184, .3);
+        border-radius: 999px;
+        background: rgba(248, 250, 252, .9);
+        color: #0f172a;
+        font: 900 20px/1 system-ui;
+      }
+      .dio-priest-modal__close:hover {
+        background: #e2e8f0;
+      }
+      .dio-priest-modal__body {
+        padding: 20px 22px 22px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .dio-priest-modal__field {
+        min-height: 82px;
+        padding: 14px;
+        display: grid;
+        align-content: start;
+        gap: 7px;
+        border: 1px solid rgba(148, 163, 184, .18);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, .9);
+      }
+      .dio-priest-modal__field span {
+        color: #64748b;
+        font: 900 11px/1.2 system-ui, Segoe UI, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .dio-priest-modal__field strong {
+        color: #0f172a;
+        font: 850 14px/1.35 system-ui, Segoe UI, sans-serif;
+        overflow-wrap: anywhere;
+      }
+      .dio-priest-modal__field--wide {
+        grid-column: 1 / -1;
+      }
+      html[data-theme="dark"] .dio-priest-modal__dialog {
+        background: #0b1220;
+        color: #f8fafc;
+        border-color: rgba(148, 163, 184, .24);
+      }
+      html[data-theme="dark"] .dio-priest-modal__head,
+      html[data-theme="dark"] .dio-priest-modal__field {
+        border-color: rgba(148, 163, 184, .18);
+      }
+      html[data-theme="dark"] .dio-priest-modal__avatar,
+      html[data-theme="dark"] .dio-priest-modal__close,
+      html[data-theme="dark"] .dio-priest-modal__field {
+        background: #111827;
+        color: #f8fafc;
+      }
+      html[data-theme="dark"] .dio-priest-modal__head h4,
+      html[data-theme="dark"] .dio-priest-modal__field strong {
+        color: #ffffff;
+      }
+      html[data-theme="dark"] .dio-priest-modal__head span,
+      html[data-theme="dark"] .dio-priest-modal__field span {
+        color: #94a3b8;
+      }
+      @media (max-width: 560px) {
+        .dio-clergy-roster .detail-list__item--stack {
+          min-height: 150px;
+          padding-bottom: 40px !important;
+        }
+        .dio-clergy-roster .detail-list__meta {
+          padding-right: 0;
+        }
+        .dio-clergy-roster .detail-list__item--stack::after {
+          left: 94px;
+          right: auto;
+          bottom: 18px;
+        }
+        .dio-priest-modal__body {
+          grid-template-columns: 1fr;
+        }
+        .dio-priest-modal__head {
+          grid-template-columns: 48px minmax(0, 1fr) auto;
+        }
+        .dio-priest-modal__avatar {
+          width: 48px;
+          height: 48px;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        if (window.__dioClergyRosterCards) return;
+        window.__dioClergyRosterCards = true;
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+        var statusByRef = {};
+        var statusFetchedAt = {};
+        var pendingStatusByRef = {};
+        function escapeHtml(s) {
+          return String(s == null ? "" : s).replace(/[<>&"']/g, function (ch) {
+            return {"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;"}[ch];
+          });
+        }
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e2) {}
+          return null;
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function restGet(table, params) {
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function (k) {
+            if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((d && d.message) || t || ("HTTP " + r.status));
+              return Array.isArray(d) ? d : [];
+            });
+          });
+        }
+        function formatDate(value) {
+          if (!value) return "";
+          try { return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value)); }
+          catch (e) { return String(value); }
+        }
+        function valueOrEmpty(value) {
+          return value == null || String(value).trim() === "" ? "Not saved" : String(value);
+        }
+        function field(label, value, wide) {
+          return '<div class="dio-priest-modal__field' + (wide ? ' dio-priest-modal__field--wide' : '') + '">' +
+            '<span>' + escapeHtml(label) + '</span>' +
+            '<strong>' + escapeHtml(valueOrEmpty(value)) + '</strong>' +
+          '</div>';
+        }
+        function openPriestModal(row, fallback) {
+          var priest = row || {};
+          var name = priest.full_name || fallback.name || "Unnamed priest";
+          var role = priest.role || fallback.role || "Parish Priest";
+          var modal = document.createElement("div");
+          modal.className = "dio-priest-modal";
+          modal.innerHTML =
+            '<section class="dio-priest-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="dio-priest-modal-title">' +
+              '<div class="dio-priest-modal__head">' +
+                '<div class="dio-priest-modal__avatar" aria-hidden="true">FR</div>' +
+                '<div><h4 id="dio-priest-modal-title">' + escapeHtml(name) + '</h4><span>' + escapeHtml(role) + '</span></div>' +
+                '<button type="button" class="dio-priest-modal__close" aria-label="Close priest details">&times;</button>' +
+              '</div>' +
+              '<div class="dio-priest-modal__body">' +
+                field("Full Name", name, false) +
+                field("Role", role, false) +
+                field("Ministry", priest.ministry || fallback.role || "", false) +
+                field("Civil Status", priest.civil_status || "", false) +
+                field("Birthdate", formatDate(priest.birthdate), false) +
+                field("Parish", priest.parish_name || "", false) +
+                field("Address", priest.address || priest.priest_address || "", true) +
+                field("Profile Created", formatDate(priest.created_at), false) +
+                field("Last Updated", formatDate(priest.updated_at), false) +
+              '</div>' +
+            '</section>';
+          function close() {
+            if (modal && modal.parentElement) modal.parentElement.removeChild(modal);
+            document.removeEventListener("keydown", onKey);
+          }
+          function onKey(e) { if (e.key === "Escape") close(); }
+          modal.addEventListener("mousedown", function (e) { if (e.target === modal) close(); });
+          modal.querySelector(".dio-priest-modal__close").addEventListener("click", close);
+          document.addEventListener("keydown", onKey);
+          document.body.appendChild(modal);
+          var closeBtn = modal.querySelector(".dio-priest-modal__close");
+          if (closeBtn) closeBtn.focus();
+        }
+        function loadPriestByName(name) {
+          if (!name) return Promise.resolve(null);
+          return restGet("parish_priests", {
+            select: "id,parish_id,parish_name,full_name,role,ministry,birthdate,address,civil_status,profile_picture_url,created_at,updated_at",
+            full_name: "eq." + name,
+            limit: 1
+          }).then(function (rows) { return rows && rows[0] ? rows[0] : null; });
+        }
+        function attachCardEvents(card) {
+          if (!card || card.getAttribute("data-dio-priest-card") === "1") return;
+          card.setAttribute("data-dio-priest-card", "1");
+          card.setAttribute("role", "button");
+          card.setAttribute("tabindex", "0");
+          var strong = card.querySelector(".detail-list__meta strong");
+          var roleEl = card.querySelector(".detail-list__meta span");
+          var name = strong ? (strong.textContent || "").trim() : "";
+          var roleText = roleEl ? (roleEl.textContent || "").trim() : "";
+          card.setAttribute("aria-label", "View priest details for " + (name || "this priest"));
+          function open() {
+            var fallback = { name: name, role: roleText };
+            loadPriestByName(name).then(function (row) {
+              openPriestModal(row, fallback);
+            }).catch(function () {
+              openPriestModal(null, fallback);
+            });
+          }
+          card.addEventListener("click", open);
+          card.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              open();
+            }
+          });
+        }
+        function enhanceClergyRoster() {
+          var heads = document.querySelectorAll("h1,h2,h3,h4");
+          for (var i = 0; i < heads.length; i++) {
+            var text = (heads[i].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+            if (text !== "clergy roster") continue;
+            var card = heads[i].closest(".glass-card") || heads[i].closest("article") || heads[i].parentElement;
+            if (card) {
+              card.classList.add("dio-clergy-roster");
+              var rows = card.querySelectorAll(".detail-list__item--stack");
+              for (var j = 0; j < rows.length; j++) attachCardEvents(rows[j]);
+            }
+          }
+        }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(enhanceClergyRoster, 500);
+        else document.addEventListener("DOMContentLoaded", function () { setTimeout(enhanceClergyRoster, 500); });
+        window.addEventListener("hashchange", function () { setTimeout(enhanceClergyRoster, 500); });
+        setInterval(enhanceClergyRoster, 1500);
+      })();
+    </script>
+    <style id="dio-user-management-style">
+      .dio-user-mgmt {
+        margin: 0 0 16px;
+        border: 1px solid rgba(15, 23, 42, .09);
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(248,250,252,.86));
+        box-shadow: 0 22px 60px rgba(15, 23, 42, .11);
+        overflow: hidden;
+      }
+      .dio-user-mgmt-screen {
+        display: none;
+      }
+      .workspace.dio-user-mgmt-open .overview-shell {
+        display: none !important;
+      }
+      .workspace.dio-user-mgmt-open .dio-user-mgmt-screen {
+        display: block;
+      }
+      .dio-user-mgmt-nav {
+        width: 100%;
+        border: 1px solid var(--panel-stroke);
+        background: transparent;
+        text-align: left;
+      }
+      .dio-user-mgmt__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(148, 163, 184, .18);
+      }
+      .dio-user-mgmt__head h4 {
+        margin: 0;
+        color: #0f172a;
+        font: 950 1.05rem/1.2 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__head p {
+        margin: 5px 0 0;
+        color: #64748b;
+        font: 750 .84rem/1.4 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .dio-user-mgmt__search {
+        width: min(280px, 52vw);
+        min-height: 42px;
+        border: 1px solid rgba(148, 163, 184, .34);
+        border-radius: 999px;
+        padding: 0 14px;
+        color: #0f172a;
+        background: #fff;
+        font: 800 13px/1 system-ui, Segoe UI, sans-serif;
+        outline: none;
+      }
+      .dio-user-mgmt__search:focus {
+        border-color: rgba(37,99,235,.48);
+        box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+      }
+      .dio-user-mgmt__btn {
+        min-height: 42px;
+        border: 1px solid rgba(37,99,235,.28);
+        border-radius: 999px;
+        padding: 0 14px;
+        color: #1d4ed8;
+        background: rgba(37,99,235,.08);
+        font: 900 12px/1 system-ui, Segoe UI, sans-serif;
+        cursor: pointer;
+      }
+      .dio-user-mgmt__stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        padding: 14px 20px 0;
+      }
+      .dio-user-mgmt__stats--compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .dio-user-mgmt__stat {
+        min-height: 76px;
+        padding: 12px;
+        display: grid;
+        gap: 4px;
+        align-content: center;
+        border: 1px solid rgba(148, 163, 184, .18);
+        border-radius: 16px;
+        background: rgba(248, 250, 252, .82);
+      }
+      .dio-user-mgmt__stat span {
+        color: #64748b;
+        font: 900 11px/1.2 system-ui, Segoe UI, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .dio-user-mgmt__stat strong {
+        color: #0f172a;
+        font: 950 1.35rem/1.05 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__scope {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid rgba(148, 163, 184, .34);
+        border-radius: 12px;
+        padding: 0 10px;
+        color: #0f172a;
+        background: #ffffff;
+        font: 900 13px/1 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__body {
+        padding: 14px 20px 20px;
+      }
+      .dio-user-mgmt__list {
+        display: grid;
+        gap: 10px;
+        max-height: 420px;
+        overflow: auto;
+        padding-right: 2px;
+      }
+      .dio-user-mgmt__row {
+        min-height: 82px;
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid rgba(148, 163, 184, .18);
+        border-radius: 16px;
+        background: #ffffff;
+      }
+      .dio-user-mgmt__avatar {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #1d4ed8;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1px solid rgba(37,99,235,.16);
+        font: 950 14px/1 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__main {
+        min-width: 0;
+        display: grid;
+        gap: 5px;
+      }
+      .dio-user-mgmt__main strong {
+        color: #0f172a;
+        font: 950 .96rem/1.2 system-ui, Segoe UI, sans-serif;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .dio-user-mgmt__main span,
+      .dio-user-mgmt__meta {
+        color: #64748b;
+        font: 750 .78rem/1.35 system-ui, Segoe UI, sans-serif;
+        overflow-wrap: anywhere;
+      }
+      .dio-user-mgmt__chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .dio-user-mgmt__chip {
+        min-height: 26px;
+        padding: 5px 9px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        color: #047857;
+        background: #dff4eb;
+        font: 900 11px/1 system-ui, Segoe UI, sans-serif;
+      }
+      .dio-user-mgmt__chip--blue {
+        color: #1d4ed8;
+        background: #dbeafe;
+      }
+      .dio-user-mgmt__empty {
+        padding: 22px;
+        border: 1px dashed rgba(148, 163, 184, .36);
+        border-radius: 16px;
+        color: #64748b;
+        background: rgba(248,250,252,.72);
+        font: 800 13px/1.45 system-ui, Segoe UI, sans-serif;
+      }
+      html[data-theme="dark"] .dio-user-mgmt {
+        border-color: rgba(148, 163, 184, .18);
+        background: linear-gradient(135deg, rgba(15,23,42,.88), rgba(30,41,59,.50));
+        box-shadow: 0 22px 60px rgba(3, 7, 16, .34);
+      }
+      html[data-theme="dark"] .dio-user-mgmt__head,
+      html[data-theme="dark"] .dio-user-mgmt__stat,
+      html[data-theme="dark"] .dio-user-mgmt__row {
+        border-color: rgba(148, 163, 184, .18);
+      }
+      html[data-theme="dark"] .dio-user-mgmt__head h4,
+      html[data-theme="dark"] .dio-user-mgmt__stat strong,
+      html[data-theme="dark"] .dio-user-mgmt__main strong {
+        color: #ffffff;
+      }
+      html[data-theme="dark"] .dio-user-mgmt__head p,
+      html[data-theme="dark"] .dio-user-mgmt__stat span,
+      html[data-theme="dark"] .dio-user-mgmt__main span,
+      html[data-theme="dark"] .dio-user-mgmt__meta,
+      html[data-theme="dark"] .dio-user-mgmt__empty {
+        color: #94a3b8;
+      }
+      html[data-theme="dark"] .dio-user-mgmt__search,
+      html[data-theme="dark"] .dio-user-mgmt__scope,
+      html[data-theme="dark"] .dio-user-mgmt__row,
+      html[data-theme="dark"] .dio-user-mgmt__stat,
+      html[data-theme="dark"] .dio-user-mgmt__empty {
+        background: rgba(15, 23, 42, .72);
+        color: #ffffff;
+      }
+      @media (max-width: 760px) {
+        .dio-user-mgmt__head {
+          flex-direction: column;
+        }
+        .dio-user-mgmt__tools,
+        .dio-user-mgmt__search {
+          width: 100%;
+        }
+        .dio-user-mgmt__stats {
+          grid-template-columns: 1fr;
+        }
+        .dio-user-mgmt__row {
+          grid-template-columns: 44px minmax(0, 1fr);
+        }
+        .dio-user-mgmt__meta {
+          grid-column: 2;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        if (window.__dioUserManagement) return;
+        window.__dioUserManagement = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+        var state = { rows: [], parishMap: {}, loading: false, error: "", pid: "", role: "", open: false, scope: "users" };
+
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[<>&"']/g, function (ch) {
+            return {"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;"}[ch];
+          });
+        }
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e2) {}
+          return null;
+        }
+        function role() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && (s.user.role || (s.user.user_metadata && s.user.user_metadata.role))) || "").toLowerCase();
+        }
+        function sessionEmail() {
+          var s = getSession() || {};
+          return String(s.email || (s.user && s.user.email) || "").trim();
+        }
+        function sessionParishName() {
+          var s = getSession() || {};
+          return String(s.parish_name || s.parishName || (s.user && (s.user.parish_name || s.user.parishName || (s.user.user_metadata && (s.user.user_metadata.parish_name || s.user.user_metadata.parishName)))) || "").trim();
+        }
+        function sessionParishId() {
+          var s = getSession() || {};
+          return String(s.parish_id || s.parishId || (s.user && (s.user.parish_id || s.user.parishId || (s.user.user_metadata && (s.user.user_metadata.parish_id || s.user.user_metadata.parishId)))) || "").trim();
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function restGet(table, params) {
+          var qs = new URLSearchParams();
+          Object.keys(params || {}).forEach(function (k) {
+            if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.set(k, params[k]);
+          });
+          return fetch(SUPABASE_URL + "/rest/v1/" + table + "?" + qs.toString(), {
+            headers: { Accept: "application/json", apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            return r.text().then(function (t) {
+              var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) {}
+              if (!r.ok) throw new Error((d && d.message) || t || ("HTTP " + r.status));
+              return Array.isArray(d) ? d : [];
+            });
+          });
+        }
+        function resolveParishId() {
+          var pid = sessionParishId();
+          if (pid) return Promise.resolve(pid);
+          var email = sessionEmail();
+          var name = sessionParishName();
+          if (email) {
+            return restGet("parishes", { select: "id", email: "eq." + email, limit: 1 })
+              .then(function (rows) { return rows && rows[0] && rows[0].id ? String(rows[0].id) : ""; })
+              .catch(function () { return ""; });
+          }
+          if (name) {
+            return restGet("parishes", { select: "id", parish_name: "eq." + name, limit: 1 })
+              .then(function (rows) { return rows && rows[0] && rows[0].id ? String(rows[0].id) : ""; })
+              .catch(function () { return ""; });
+          }
+          return Promise.resolve("");
+        }
+        function roleCanUse(r) {
+          return r === "diocese" || r === "parish";
+        }
+        function findWorkspace() {
+          return document.querySelector(".workspace") || document.getElementById("root");
+        }
+        function findNav() {
+          return document.querySelector(".sidebar__nav") || document.querySelector("nav") || null;
+        }
+        function initials(name) {
+          return String(name || "U").split(/\s+/).filter(Boolean).map(function (p) { return p.charAt(0); }).join("").slice(0, 2).toUpperCase() || "U";
+        }
+        function dateText(v) {
+          if (!v) return "No date";
+          try { return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(v)); }
+          catch (e) { return String(v); }
+        }
+        function rowMatches(row, q) {
+          if (!q) return true;
+          var hay = state.scope === "parishes"
+            ? [row.parish_name, row.email, row.contact_number, row.city, row.province].join(" ").toLowerCase()
+            : [row.full_name, row.email, row.phone_number, row.parish_name, state.parishMap[row.parish_id]].join(" ").toLowerCase();
+          return hay.indexOf(q) !== -1;
+        }
+        function renderRows(wrap) {
+          var input = wrap.querySelector("[data-dio-user-search]");
+          var q = input ? String(input.value || "").trim().toLowerCase() : "";
+          var list = wrap.querySelector("[data-dio-user-list]");
+          var total = wrap.querySelector("[data-dio-user-total]");
+          var visibleRows = state.rows.filter(function (row) { return rowMatches(row, q); });
+          if (total) total.textContent = String(visibleRows.length);
+          if (!list) return;
+          if (state.loading) {
+            list.innerHTML = '<div class="dio-user-mgmt__empty">Loading users...</div>';
+            return;
+          }
+          if (state.error) {
+            list.innerHTML = '<div class="dio-user-mgmt__empty">' + esc(state.error) + '</div>';
+            return;
+          }
+          if (!visibleRows.length) {
+            list.innerHTML = '<div class="dio-user-mgmt__empty">No ' + (state.scope === "parishes" ? "parishes" : "users") + ' found for this view.</div>';
+            return;
+          }
+          list.innerHTML = visibleRows.slice(0, 80).map(function (u) {
+            if (state.scope === "parishes") {
+              var parishName = u.parish_name || "Unnamed parish";
+              return '<div class="dio-user-mgmt__row">' +
+                '<div class="dio-user-mgmt__avatar" aria-hidden="true">' + esc(initials(parishName)) + '</div>' +
+                '<div class="dio-user-mgmt__main">' +
+                  '<strong>' + esc(parishName) + '</strong>' +
+                  '<span>' + esc(u.email || "No email saved") + '</span>' +
+                  '<div class="dio-user-mgmt__chips">' +
+                    '<em class="dio-user-mgmt__chip">' + esc(u.city || "No city") + '</em>' +
+                    '<em class="dio-user-mgmt__chip dio-user-mgmt__chip--blue">' + esc(u.contact_number || "No phone") + '</em>' +
+                  '</div>' +
+                '</div>' +
+                '<div class="dio-user-mgmt__meta">Saved ' + esc(dateText(u.created_at)) + '</div>' +
+              '</div>';
+            }
+            var name = u.full_name || u.email || "Unnamed user";
+            var parish = u.parish_name || state.parishMap[u.parish_id] || "No parish linked";
+            return '<div class="dio-user-mgmt__row">' +
+              '<div class="dio-user-mgmt__avatar" aria-hidden="true">' + esc(initials(name)) + '</div>' +
+              '<div class="dio-user-mgmt__main">' +
+                '<strong>' + esc(name) + '</strong>' +
+                '<span>' + esc(u.email || "No email saved") + '</span>' +
+                '<div class="dio-user-mgmt__chips">' +
+                  '<em class="dio-user-mgmt__chip">' + esc(parish) + '</em>' +
+                  '<em class="dio-user-mgmt__chip dio-user-mgmt__chip--blue">' + esc(u.phone_number || "No phone") + '</em>' +
+                '</div>' +
+              '</div>' +
+              '<div class="dio-user-mgmt__meta">Joined ' + esc(dateText(u.created_at)) + '</div>' +
+            '</div>';
+          }).join("");
+        }
+        function renderShell(wrap) {
+          var r = state.role;
+          var isParish = r === "parish";
+          var scopeLabel = state.scope === "parishes" ? "Parishes" : "Users";
+          wrap.innerHTML =
+            '<div class="dio-user-mgmt__head">' +
+              '<div>' +
+                '<h4>User Management</h4>' +
+                '<p>' + (isParish ? "Records are filtered to this parish." : "Choose users or parishes from the scope dropdown.") + '</p>' +
+              '</div>' +
+              '<div class="dio-user-mgmt__tools">' +
+                '<input class="dio-user-mgmt__search" data-dio-user-search placeholder="Search users" />' +
+                '<button class="dio-user-mgmt__btn" type="button" data-dio-user-refresh>Refresh</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dio-user-mgmt__stats dio-user-mgmt__stats--compact">' +
+              '<div class="dio-user-mgmt__stat"><span>Visible ' + (state.scope === "parishes" ? "parishes" : "users") + '</span><strong data-dio-user-total>0</strong></div>' +
+              '<div class="dio-user-mgmt__stat"><span>Scope</span><select class="dio-user-mgmt__scope" data-dio-user-scope>' +
+                '<option value="users"' + (state.scope === "users" ? " selected" : "") + '>Users</option>' +
+                '<option value="parishes"' + (state.scope === "parishes" ? " selected" : "") + '>Parishes</option>' +
+              '</select></div>' +
+            '</div>' +
+            '<div class="dio-user-mgmt__body"><div class="dio-user-mgmt__list" data-dio-user-list></div></div>';
+          wrap.querySelector("[data-dio-user-search]").addEventListener("input", function () { renderRows(wrap); });
+          wrap.querySelector("[data-dio-user-refresh]").addEventListener("click", function () { loadUsers(wrap, true); });
+          wrap.querySelector("[data-dio-user-scope]").addEventListener("change", function (e) {
+            state.scope = e.target.value === "parishes" ? "parishes" : "users";
+            renderShell(wrap);
+            loadUsers(wrap, true);
+          });
+          renderRows(wrap);
+        }
+        function loadParishMap() {
+          return restGet("parishes", { select: "id,parish_name", limit: 10000, order: "parish_name.asc" })
+            .then(function (rows) {
+              state.parishMap = {};
+              rows.forEach(function (p) { if (p && p.id) state.parishMap[p.id] = p.parish_name || ""; });
+            }).catch(function () {});
+        }
+        function loadUsers(wrap, force) {
+          if (state.loading && !force) return;
+          state.loading = true;
+          state.error = "";
+          renderRows(wrap);
+          var r = state.role;
+          resolveParishId().then(function (pid) {
+            state.pid = pid || "";
+            if (state.scope === "parishes") {
+              var parishParams = {
+                select: "id,parish_name,address,city,province,contact_number,email,created_at,updated_at",
+                order: "parish_name.asc",
+                limit: 500
+              };
+              if (r === "parish") {
+                if (state.pid) parishParams.id = "eq." + state.pid;
+                else if (sessionParishName()) parishParams.parish_name = "eq." + sessionParishName();
+                else return Promise.all([loadParishMap(), Promise.resolve([])]);
+              }
+              return Promise.all([loadParishMap(), restGet("parishes", parishParams)]);
+            } else {
+              var params = {
+                select: "id,parish_id,parish_name,full_name,email,phone_number,birthdate,address,civil_status,profile_picture_url,created_at,updated_at",
+                order: "created_at.desc",
+                limit: 500
+              };
+              if (r === "parish") {
+                if (state.pid) params.parish_id = "eq." + state.pid;
+                else if (sessionParishName()) params.parish_name = "eq." + sessionParishName();
+                else return Promise.all([loadParishMap(), Promise.resolve([])]);
+              }
+              return Promise.all([loadParishMap(), restGet("registered_users", params)]);
+            }
+          }).then(function (result) {
+            state.rows = Array.isArray(result[1]) ? result[1] : [];
+            state.loading = false;
+            renderRows(wrap);
+          }).catch(function (err) {
+            state.rows = [];
+            state.loading = false;
+            state.error = "Could not load users: " + (err && err.message ? err.message : err);
+            renderRows(wrap);
+          });
+        }
+        function cleanup() {
+          var panels = document.querySelectorAll(".dio-user-mgmt");
+          for (var i = 0; i < panels.length; i++) panels[i].remove();
+          var screens = document.querySelectorAll(".dio-user-mgmt-screen");
+          for (var j = 0; j < screens.length; j++) screens[j].remove();
+          var workspaces = document.querySelectorAll(".workspace.dio-user-mgmt-open");
+          for (var k = 0; k < workspaces.length; k++) workspaces[k].classList.remove("dio-user-mgmt-open");
+          var active = document.querySelectorAll(".dio-user-mgmt-nav.is-active");
+          for (var a = 0; a < active.length; a++) active[a].classList.remove("is-active");
+        }
+        function closeScreen() {
+          state.open = false;
+          var ws = findWorkspace();
+          if (ws) ws.classList.remove("dio-user-mgmt-open");
+          var active = document.querySelectorAll(".dio-user-mgmt-nav.is-active");
+          for (var i = 0; i < active.length; i++) active[i].classList.remove("is-active");
+        }
+        function mountSidebarButton() {
+          var r = role();
+          if (!roleCanUse(r)) return;
+          var nav = findNav();
+          if (!nav || nav.querySelector(".dio-user-mgmt-nav")) return;
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "nav-item dio-user-mgmt-nav";
+          btn.innerHTML = '<span class="nav-item__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.8"></circle><circle cx="17" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M4.5 19c1.1-2.7 3.4-4.2 6.5-4.2S16.4 16.3 17.5 19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span><span>User Management</span>';
+          btn.addEventListener("click", function () {
+            state.open = true;
+            mount();
+          });
+          nav.appendChild(btn);
+          if (nav.getAttribute("data-dio-user-nav-listener") !== "1") {
+            nav.setAttribute("data-dio-user-nav-listener", "1");
+            nav.addEventListener("click", function (e) {
+              var target = e.target && e.target.closest && e.target.closest(".nav-item");
+              if (target && !target.classList.contains("dio-user-mgmt-nav")) closeScreen();
+            });
+          }
+        }
+        function mount() {
+          var r = role();
+          state.role = r;
+          if (!roleCanUse(r)) {
+            cleanup();
+            return;
+          }
+          mountSidebarButton();
+          if (!state.open) return;
+          var workspace = findWorkspace();
+          if (!workspace) return;
+          workspace.classList.add("dio-user-mgmt-open");
+          var navBtn = document.querySelector(".dio-user-mgmt-nav");
+          if (navBtn) navBtn.classList.add("is-active");
+          var screen = workspace.querySelector(".dio-user-mgmt-screen");
+          if (!screen) {
+            screen = document.createElement("section");
+            screen.className = "dio-user-mgmt-screen";
+            var topbar = workspace.querySelector(".workspace__topbar");
+            if (topbar && topbar.parentElement === workspace) workspace.insertBefore(screen, topbar.nextSibling);
+            else workspace.appendChild(screen);
+          }
+          var wrap = screen.querySelector(".dio-user-mgmt");
+          if (!wrap) {
+            wrap = document.createElement("section");
+            wrap.className = "dio-user-mgmt";
+            screen.appendChild(wrap);
+            renderShell(wrap);
+            loadUsers(wrap, false);
+          }
+        }
+        function tick() { try { mount(); } catch (e) {} }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function () { setTimeout(tick, 700); });
+        setInterval(tick, 1800);
+      })();
+    </script>
     <style id="senior-friendly-theme">
       /* =========================================================
          Senior-friendly theme.
@@ -352,6 +1301,29 @@
         background: rgba(127, 29, 29, 0.35);
         color: #fecaca;
         border-color: rgba(248, 113, 113, 0.5);
+      }
+      .umr-cancel-btn {
+        font: 700 12px/1 system-ui, Segoe UI, sans-serif;
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(245, 158, 11, 0.45);
+        background: rgba(255, 251, 235, 0.95);
+        color: #92400e;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+      }
+      .umr-cancel-btn:hover:not(:disabled) {
+        background: #fef3c7;
+        border-color: #d97706;
+      }
+      .umr-cancel-btn:disabled {
+        opacity: 0.62;
+        cursor: not-allowed;
+      }
+      html[data-theme="dark"] .umr-cancel-btn {
+        background: rgba(120, 53, 15, 0.35);
+        color: #fde68a;
+        border-color: rgba(251, 191, 36, 0.5);
       }
 
       /* =========================================================
@@ -4674,6 +5646,30 @@
       .pab-deleteall-btn:hover{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.55)}
       .pab-deleteall-btn:disabled{opacity:.55;cursor:not-allowed}
       html[data-theme="dark"] .pab-deleteall-btn{color:#fecaca;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.12)}
+      .parish-booking-decline{border-color:rgba(239,68,68,.42)!important;color:#b91c1c!important;background:rgba(239,68,68,.06)!important}
+      .parish-booking-decline:hover:not(:disabled){border-color:rgba(220,38,38,.55)!important;background:rgba(239,68,68,.11)!important}
+      .parish-booking-decline:disabled{opacity:.58;cursor:not-allowed}
+      html[data-theme="dark"] .parish-booking-decline{color:#fecaca!important;border-color:rgba(248,113,113,.38)!important;background:rgba(127,29,29,.18)!important}
+      .pab-decline-btn{appearance:none;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:#b91c1c;border-radius:10px;padding:9px 12px;font:850 12px/1 system-ui;cursor:pointer}
+      .pab-decline-btn:hover:not(:disabled){background:rgba(239,68,68,.14);border-color:rgba(220,38,38,.62)}
+      .pab-decline-btn:disabled{opacity:.58;cursor:not-allowed}
+      .pab-status-badge{display:inline-flex;align-items:center;gap:6px;margin:4px 8px 4px 0;border-radius:999px;padding:7px 10px;font:850 11px/1 system-ui;text-transform:uppercase;letter-spacing:.02em;border:1px solid rgba(15,23,42,.12);background:rgba(15,23,42,.06);color:#475569}
+      .pab-status-badge--new{border-color:rgba(22,163,74,.22);background:rgba(34,197,94,.12);color:#15803d}
+      .pab-status-badge--pending{border-color:rgba(37,99,235,.22);background:rgba(59,130,246,.12);color:#1d4ed8}
+      .pab-status-badge--cancelled{border-color:rgba(100,116,139,.28);background:rgba(100,116,139,.12);color:#475569}
+      .pab-status-badge--declined{border-color:rgba(239,68,68,.28);background:rgba(239,68,68,.12);color:#b91c1c}
+      .pab-status-badge--confirmed{border-color:rgba(22,163,74,.26);background:rgba(22,163,74,.13);color:#15803d}
+      .pab-status-badge--done{border-color:rgba(20,184,166,.25);background:rgba(20,184,166,.12);color:#0f766e}
+      .parish-booking-item.is-declined{opacity:.72}
+      .parish-booking-item.is-cancelled{opacity:.72}
+      [data-pab-decline="1"].is-declined{opacity:.72}
+      [data-pab-decline="1"].is-cancelled{opacity:.72}
+      .parish-booking-item.is-declined .pab-decline-btn{color:#64748b;border-color:rgba(100,116,139,.35);background:rgba(100,116,139,.08)}
+      .parish-booking-item.is-cancelled .pab-decline-btn{color:#64748b;border-color:rgba(100,116,139,.35);background:rgba(100,116,139,.08)}
+      [data-pab-decline="1"].is-declined .pab-decline-btn,
+      [data-pab-decline="1"].is-cancelled .pab-decline-btn{color:#64748b;border-color:rgba(100,116,139,.35);background:rgba(100,116,139,.08)}
+      html[data-theme="dark"] .pab-decline-btn{color:#fecaca;border-color:rgba(248,113,113,.38);background:rgba(127,29,29,.20)}
+      html[data-theme="dark"] .pab-status-badge{border-color:rgba(148,163,184,.22);background:rgba(148,163,184,.12);color:#cbd5e1}
     </style>
     <script>
       (function () {
@@ -4683,6 +5679,8 @@
         var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
         var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
         var SESSION_KEY = "diocese-dashboard-db-session";
+        var statusByRef = {};
+        var pendingStatusByRef = {};
 
         function getSession() {
           try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
@@ -4810,6 +5808,338 @@
         }
         window.addEventListener("hashchange", function () { setTimeout(tick, 700); });
         setInterval(tick, 2500);
+      })();
+    </script>
+    <script>
+      (function () {
+        if (window.__pabDeclineInjected) return;
+        window.__pabDeclineInjected = true;
+
+        var SUPABASE_URL = "https://lnipoknkbjcxwnggzrnm.supabase.co";
+        var SUPABASE_KEY = "sb_publishable_865CAmJ0g9wUj9dlCo6phQ_l5biuRKK";
+        var SESSION_KEY = "diocese-dashboard-db-session";
+        var statusByRef = {};
+        var pendingStatusByRef = {};
+        var statusFetchedAt = {};
+
+        function getSession() {
+          try { var raw = window.sessionStorage.getItem(SESSION_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+          try { var raw2 = window.localStorage.getItem(SESSION_KEY); if (raw2) return JSON.parse(raw2); } catch (e2) {}
+          return null;
+        }
+        function accessToken() {
+          var s = getSession();
+          return (s && s.accessToken) || SUPABASE_KEY;
+        }
+        function isParishRole() {
+          var s = getSession() || {};
+          return String(s.role || (s.user && s.user.role) || "").toLowerCase() === "parish";
+        }
+        function isParishBookingsView() {
+          return isParishRole() && !!document.querySelector(".parish-booking-item, .parish-certificate-upload, .parish-booking-actions");
+        }
+        function extractRef(row) {
+          var text = row ? (row.textContent || "") : "";
+          var m = text.match(/\b(?:CERT|APT)-[A-Z0-9-]+\b/i);
+          return m ? m[0].toUpperCase() : "";
+        }
+        function extractRefs(row) {
+          var text = row ? (row.textContent || "") : "";
+          var matches = text.match(/\b(?:CERT|APT)-[A-Z0-9-]+\b/ig) || [];
+          var seen = {};
+          var refs = [];
+          for (var i = 0; i < matches.length; i++) {
+            var ref = String(matches[i] || "").toUpperCase();
+            if (!seen[ref]) {
+              seen[ref] = true;
+              refs.push(ref);
+            }
+          }
+          return refs;
+        }
+        function refCount(row) {
+          return extractRefs(row).length;
+        }
+        function isDeclined(row) {
+          return /\b(declined|cancelled|canceled)\b/i.test(row ? row.textContent || "" : "");
+        }
+        function normalizeStatus(status) {
+          var clean = String(status || "").trim();
+          if (/^cancell?e?d?$|^cancel$/i.test(clean)) return "Cancelled";
+          if (/^declin(e|ed)?$/i.test(clean)) return "Declined";
+          if (/^confirm(ed)?$/i.test(clean)) return "Confirmed";
+          return clean || "New";
+        }
+        function statusTone(status) {
+          var s = String(status || "").toLowerCase();
+          if (/cancel|cancell|cancelled|canceled/.test(s)) return "cancelled";
+          if (/declined/.test(s)) return "declined";
+          if (/confirmed|confirm/.test(s)) return "confirmed";
+          if (/complete|released|done|approved/.test(s)) return "done";
+          if (/pending|review|process/.test(s)) return "pending";
+          return "new";
+        }
+        function isClosedStatus(status) {
+          return /cancel|cancell|cancelled|canceled|declined|confirmed|confirm|complete|released|done/i.test(String(status || ""));
+        }
+        function closedButtonLabel(status) {
+          var s = String(status || "").toLowerCase();
+          if (/cancel|cancell|cancelled|canceled/.test(s)) return "Cancelled";
+          if (/declined/.test(s)) return "Declined";
+          if (/confirmed|confirm/.test(s)) return "Confirmed";
+          if (/complete|released|done/.test(s)) return "Released";
+          return "Closed";
+        }
+        function ensureStatusBadge(row, actions) {
+          var badge = row.querySelector(".pab-status-badge");
+          if (!badge) {
+            badge = document.createElement("span");
+            badge.className = "pab-status-badge pab-status-badge--new";
+            badge.textContent = "New";
+            try { actions.insertBefore(badge, actions.firstChild); } catch (e) { actions.appendChild(badge); }
+          }
+          return badge;
+        }
+        function applyRowStatus(row, status) {
+          if (!row) return;
+          var clean = normalizeStatus(status);
+          var actions =
+            row.querySelector(".parish-booking-actions") ||
+            row.querySelector(".parish-certificate-upload") ||
+            row.querySelector(".pab-decline-btn") && row.querySelector(".pab-decline-btn").parentElement ||
+            row;
+          var badge = ensureStatusBadge(row, actions);
+          badge.textContent = clean;
+          badge.className = "pab-status-badge pab-status-badge--" + statusTone(clean);
+          row.classList.toggle("is-cancelled", /cancel|cancell|cancelled|canceled/i.test(clean));
+          row.classList.toggle("is-declined", /declined/i.test(clean));
+          var btn = row.querySelector(".pab-decline-btn");
+          if (btn) {
+            if (isClosedStatus(clean)) {
+              btn.disabled = true;
+              btn.textContent = closedButtonLabel(clean);
+            } else {
+              btn.disabled = false;
+              btn.textContent = "Decline";
+            }
+          }
+        }
+        function fetchStatus(ref, force) {
+          if (!ref) return Promise.resolve("");
+          var now = Date.now();
+          if (!force && Object.prototype.hasOwnProperty.call(statusByRef, ref) && statusFetchedAt[ref] && now - statusFetchedAt[ref] < 5000) return Promise.resolve(statusByRef[ref]);
+          if (pendingStatusByRef[ref]) return pendingStatusByRef[ref];
+          pendingStatusByRef[ref] = fetch(SUPABASE_URL + "/rest/v1/diocese_service_bookings?select=reference_number,booking_status&reference_number=eq." + encodeURIComponent(ref) + "&limit=1", {
+            headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + accessToken() }
+          }).then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          }).then(function (rows) {
+            var row = Array.isArray(rows) && rows.length ? rows[0] : null;
+            statusByRef[ref] = normalizeStatus(row && row.booking_status);
+            statusFetchedAt[ref] = Date.now();
+            return statusByRef[ref];
+          }).catch(function () {
+            return statusByRef[ref] || "";
+          }).finally(function () {
+            delete pendingStatusByRef[ref];
+          });
+          return pendingStatusByRef[ref];
+        }
+        function patchDecline(ref) {
+          var body = {
+            booking_status: "Declined",
+            updated_at: new Date().toISOString()
+          };
+          return fetch(SUPABASE_URL + "/rest/v1/diocese_service_bookings?reference_number=eq." + encodeURIComponent(ref), {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              apikey: SUPABASE_KEY,
+              Authorization: "Bearer " + accessToken(),
+              Prefer: "return=minimal"
+            },
+            body: JSON.stringify(body)
+          }).then(function (r) {
+            if (r.ok) return;
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              throw new Error((data && data.message) || t || ("HTTP " + r.status));
+            });
+          });
+        }
+        function patchConfirmed(ref) {
+          var body = {
+            booking_status: "Confirmed",
+            updated_at: new Date().toISOString()
+          };
+          return fetch(SUPABASE_URL + "/rest/v1/diocese_service_bookings?reference_number=eq." + encodeURIComponent(ref), {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              apikey: SUPABASE_KEY,
+              Authorization: "Bearer " + accessToken(),
+              Prefer: "return=minimal"
+            },
+            body: JSON.stringify(body)
+          }).then(function (r) {
+            if (r.ok) return;
+            return r.text().then(function (t) {
+              var data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+              throw new Error((data && data.message) || t || ("HTTP " + r.status));
+            });
+          });
+        }
+        function attachDecline(row) {
+          if (!row) return;
+          var ref = extractRef(row);
+          if (!ref) return;
+          if (row.querySelector(".parish-booking-decline")) return;
+          /* React re-renders drop injected nodes; if flag remains but the button is gone, re-attach. */
+          if (row.getAttribute("data-pab-decline") === "1") {
+            if (row.querySelector(".pab-decline-btn")) {
+              fetchStatus(ref, true).then(function (status) { applyRowStatus(row, status); });
+              return;
+            }
+            row.removeAttribute("data-pab-decline");
+          }
+          row.setAttribute("data-pab-decline", "1");
+          row.setAttribute("data-pab-ref", ref);
+          var actions =
+            row.querySelector(".parish-booking-actions") ||
+            row.querySelector(".parish-certificate-upload") ||
+            row.querySelector(".parish-booking-copy") && row.querySelector(".parish-booking-copy").parentElement ||
+            (function () {
+              var controls = row.querySelectorAll("button, a[href]");
+              return controls.length ? controls[controls.length - 1].parentElement : null;
+            })() ||
+            row;
+          ensureStatusBadge(row, actions);
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "pab-decline-btn";
+          btn.textContent = "Decline";
+          var copyEl =
+            row.querySelector("button.parish-booking-copy") ||
+            row.querySelector("button.secondary-action.parish-booking-copy") ||
+            row.querySelector(".parish-booking-copy");
+          try {
+            if (copyEl && copyEl.parentNode) {
+              copyEl.parentNode.insertBefore(btn, copyEl.nextSibling);
+            } else {
+              actions.appendChild(btn);
+            }
+          } catch (e) {
+            actions.appendChild(btn);
+          }
+          applyRowStatus(row, isDeclined(row) ? "Declined" : "");
+          fetchStatus(ref, true).then(function (status) { applyRowStatus(row, status); });
+          btn.addEventListener("click", function () {
+            var currentStatus = statusByRef[ref] || "";
+            if (isClosedStatus(currentStatus)) {
+              applyRowStatus(row, currentStatus);
+              return;
+            }
+            var nameEl = row.querySelector("strong");
+            var name = nameEl ? (nameEl.textContent || "").trim() : "this booking";
+            if (!window.confirm("Decline " + name + "?\n\nReference: " + ref + "\n\nThis will mark the service/appointment booking as Declined.")) return;
+            btn.disabled = true;
+            btn.textContent = "Declining...";
+            patchDecline(ref).then(function () {
+              statusByRef[ref] = "Declined";
+              applyRowStatus(row, "Declined");
+            }).catch(function (err) {
+              alert("Could not decline booking: " + (err && err.message ? err.message : err));
+              btn.disabled = false;
+              btn.textContent = "Decline";
+            });
+          });
+        }
+        function attachConfirmWatcher(row) {
+          if (!row || row.getAttribute("data-pab-confirm-watch") === "1") return;
+          var ref = extractRef(row);
+          if (!ref) return;
+          row.setAttribute("data-pab-confirm-watch", "1");
+          row.addEventListener("click", function (event) {
+            var target = event.target && event.target.closest && event.target.closest("button, a");
+            if (!target) return;
+            var label = String(target.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+            if (label.indexOf("confirm appointment") === -1 && label !== "confirm") return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+            var currentStatus = statusByRef[ref] || "";
+            if (isClosedStatus(currentStatus)) {
+              applyRowStatus(row, currentStatus);
+              return;
+            }
+            var nameEl = row.querySelector("strong");
+            var name = nameEl ? (nameEl.textContent || "").trim() : "this appointment";
+            if (!window.confirm("Confirm " + name + "?\n\nReference: " + ref + "\n\nThis will mark the appointment as Confirmed.")) return;
+            target.disabled = true;
+            target.textContent = "Confirming...";
+            patchConfirmed(ref).then(function () {
+              statusByRef[ref] = "Confirmed";
+              applyRowStatus(row, "Confirmed");
+              target.textContent = "Confirmed";
+            }).catch(function (err) {
+              alert("Could not confirm appointment: " + (err && err.message ? err.message : err));
+              target.disabled = false;
+              target.textContent = "Confirm Appointment";
+              fetchStatus(ref).then(function (fresh) { applyRowStatus(row, fresh); });
+            });
+          }, true);
+        }
+        function tick() {
+          if (!isParishBookingsView()) return;
+          var rows = document.querySelectorAll(".parish-booking-item");
+          for (var i = 0; i < rows.length; i++) {
+            attachDecline(rows[i]);
+            attachConfirmWatcher(rows[i]);
+          }
+
+          var seen = {};
+          for (var s = 0; s < rows.length; s++) {
+            var knownRef = extractRef(rows[s]);
+            if (knownRef) seen[knownRef] = true;
+          }
+
+          var root = document.querySelector("main") || document.querySelector(".workspace") || document.body;
+          var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+              return /\b(?:CERT|APT)-[A-Z0-9-]+\b/i.test(node.nodeValue || "") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+          });
+          var textNode;
+          while ((textNode = walker.nextNode())) {
+            var el = textNode.parentElement;
+            var ref = extractRef(el);
+            if (!ref || seen[ref]) continue;
+            var candidate = el.closest(".parish-booking-item, li, article");
+            if (!candidate) {
+              var cur = el;
+              while (cur && cur !== document.body && cur !== root) {
+                if (refCount(cur) === 1) {
+                  var parent = cur.parentElement;
+                  if (!parent || refCount(parent) !== 1) {
+                    candidate = cur;
+                    break;
+                  }
+                }
+                cur = cur.parentElement;
+              }
+            }
+            if (candidate) {
+              attachDecline(candidate);
+              attachConfirmWatcher(candidate);
+              seen[ref] = true;
+            }
+          }
+        }
+        if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
+        else document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 900); });
+        window.addEventListener("hashchange", function () { setTimeout(tick, 800); });
+        setInterval(tick, 2000);
       })();
     </script>
 
@@ -4968,6 +6298,34 @@
           });
         }
 
+        function restCancelBooking(bookingId) {
+          return fetch(
+            SUPABASE_URL + "/rest/v1/diocese_service_bookings?id=eq." + encodeURIComponent(bookingId),
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                apikey: SUPABASE_KEY,
+                Authorization: "Bearer " + accessToken(),
+                Prefer: "return=minimal"
+              },
+              body: JSON.stringify({
+                booking_status: "Cancelled",
+                updated_at: new Date().toISOString()
+              })
+            }
+          ).then(function (r) {
+            if (r.ok) return;
+            return r.text().then(function (t) {
+              var data = null;
+              try {
+                data = t ? JSON.parse(t) : null;
+              } catch (e) {}
+              throw new Error((data && data.message) || t || "HTTP " + r.status);
+            });
+          });
+        }
+
         /* Prefer fresh RPC name first — avoids a stuck PostgREST cache on delete_my_booking. */
         function rpcDeleteBooking(bookingId, onOk, onErr) {
           postRpc("umr_delete_own_booking", { p_booking_id: bookingId })
@@ -5005,6 +6363,46 @@
 
             var wrap = document.createElement("div");
             wrap.className = "umr-delete-wrap";
+            var cancelBtn = document.createElement("button");
+            cancelBtn.type = "button";
+            cancelBtn.className = "umr-cancel-btn";
+            var alreadyCancelled = /\b(cancelled|canceled)\b/i.test(card.textContent || "");
+            cancelBtn.textContent = alreadyCancelled ? "Cancelled" : "Cancel request";
+            cancelBtn.disabled = alreadyCancelled;
+            cancelBtn.setAttribute("data-umr-booking-id", id);
+
+            cancelBtn.addEventListener("click", function () {
+              var refEl = card.querySelector(".user-request-card__reference strong");
+              var ref = refEl ? String(refEl.textContent || "").trim() : "";
+              if (!window.confirm("Cancel this request?\n\n" + (ref ? "Reference: " + ref + "\n\n" : "") + "The parish will see it as Cancelled.")) return;
+              cancelBtn.disabled = true;
+              cancelBtn.textContent = "Cancelling...";
+              restCancelBooking(id)
+                .then(function () {
+                  cancelBtn.textContent = "Cancelled";
+                  try {
+                    card.classList.add("is-cancelled");
+                    if (window.__umrLastBookings) {
+                      window.__umrLastBookings.forEach(function (r) {
+                        if (String(r.id) === String(id)) r.booking_status = "Cancelled";
+                      });
+                    }
+                    var status = card.querySelector(".user-request-status, .status-badge");
+                    if (status) {
+                      status.textContent = "Cancelled";
+                      status.classList.remove("user-request-status--green", "user-request-status--gold", "user-request-status--blue");
+                      status.classList.add("user-request-status--gold");
+                    }
+                  } catch (e) {}
+                  toast("Request cancelled. The parish will see this booking as Cancelled.");
+                })
+                .catch(function (err) {
+                  cancelBtn.disabled = false;
+                  cancelBtn.textContent = "Cancel request";
+                  window.alert(err && err.message ? err.message : "Could not cancel this request.");
+                });
+            });
+
             var btn = document.createElement("button");
             btn.type = "button";
             btn.className = "umr-delete-btn";
@@ -5043,6 +6441,7 @@
               );
             });
 
+            wrap.appendChild(cancelBtn);
             wrap.appendChild(btn);
             card.appendChild(wrap);
           });
@@ -6740,7 +8139,18 @@
             var arr = [];
             try { arr = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { arr = []; }
             if (!Array.isArray(arr)) arr = [];
-            // Keep last 200 items.
+            // Merge by id when possible (updates, scanned_file_url uploads, etc.)
+            var rid = row.id ? String(row.id) : "";
+            if (rid) {
+              for (var i = 0; i < arr.length; i++) {
+                if (arr[i] && String(arr[i].id || "") === rid) {
+                  arr[i] = Object.assign({}, arr[i], row);
+                  localStorage.setItem(key, JSON.stringify(arr));
+                  return;
+                }
+              }
+            }
+            // Keep last 200 items (newest first).
             arr.unshift(row);
             if (arr.length > 200) arr = arr.slice(0, 200);
             localStorage.setItem(key, JSON.stringify(arr));
@@ -6755,9 +8165,20 @@
           window.fetch = function (input, init) {
             var url = (typeof input === "string") ? input : (input && input.url) || "";
             var method = (init && init.method) ? String(init.method).toUpperCase() : "GET";
+            // Cache from request body too (PostgREST may return empty body depending on Prefer headers).
+            try {
+              var isWrite = method === "POST" || method === "PATCH" || method === "PUT";
+              if (role() === "parish" && isWrite && url.indexOf("/rest/v1/diocese_archive_records") !== -1 && init && typeof init.body === "string") {
+                var parsed = null;
+                try { parsed = JSON.parse(init.body); } catch (e0) { parsed = null; }
+                var row0 = Array.isArray(parsed) ? parsed[0] : parsed;
+                if (row0) pushCache(row0);
+              }
+            } catch (e1) {}
             var p = _fetch.apply(this, arguments);
             try {
-              if (role() === "parish" && method === "POST" && url.indexOf("/rest/v1/diocese_archive_records") !== -1) {
+              var isWrite2 = method === "POST" || method === "PATCH" || method === "PUT";
+              if (role() === "parish" && isWrite2 && url.indexOf("/rest/v1/diocese_archive_records") !== -1) {
                 p.then(function (res) {
                   try {
                     if (!res || !res.ok) return;
@@ -6910,6 +8331,22 @@
       @media (max-width: 760px){.dio-reports-export__grid{grid-template-columns:1fr}}
       .dio-reports-export__meta{margin-top:8px;color:#475569;font:700 12px/1.4 system-ui}
       html[data-theme="dark"] .dio-reports-export__meta{color:#94a3b8}
+      .dio-reports-export__preview{display:none;margin-top:12px;border:1px solid rgba(148,163,184,.35);border-radius:12px;overflow:hidden;background:#fff}
+      html[data-theme="dark"] .dio-reports-export__preview{background:#0b1220;border-color:rgba(148,163,184,.22)}
+      .dio-reports-export__preview.is-visible{display:block}
+      .dio-reports-export__preview-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid rgba(148,163,184,.25)}
+      .dio-reports-export__preview-title{display:grid;gap:3px}
+      .dio-reports-export__preview-title strong{font:900 13px/1.2 system-ui;color:#0f172a}
+      .dio-reports-export__preview-title span{font:700 12px/1.35 system-ui;color:#64748b}
+      html[data-theme="dark"] .dio-reports-export__preview-title strong{color:#f8fafc}
+      html[data-theme="dark"] .dio-reports-export__preview-title span{color:#94a3b8}
+      .dio-reports-export__preview-actions{display:flex;gap:8px;align-items:center}
+      .dio-reports-export__preview-table{max-height:280px;overflow:auto}
+      .dio-reports-export__preview-table table{width:100%;border-collapse:collapse;font:700 12px/1.35 system-ui}
+      .dio-reports-export__preview-table th,.dio-reports-export__preview-table td{padding:8px 10px;border-bottom:1px solid rgba(148,163,184,.2);text-align:left;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+      .dio-reports-export__preview-table th{position:sticky;top:0;background:#f8fafc;color:#334155;font-weight:900}
+      html[data-theme="dark"] .dio-reports-export__preview-table th{background:#111827;color:#e2e8f0}
+      html[data-theme="dark"] .dio-reports-export__preview-table td{color:#e2e8f0}
     </style>
     <script>
       // Reports Center: fix unclickable export buttons by injecting working export actions.
@@ -7030,22 +8467,81 @@
           wrap.className = "dio-reports-export";
           wrap.innerHTML =
             '<div class="dio-reports-export__head">' +
-              '<h4>Export Actions (fixed)</h4>' +
+              '<h4>Export Actions</h4>' +
               '<div class="dio-reports-export__grid">' +
-                '<button class="dio-reports-export__btn" type="button" data-exp="bookings">Export service booking rows</button>' +
-                '<button class="dio-reports-export__btn" type="button" data-exp="parishes">Export parish rows</button>' +
-                '<button class="dio-reports-export__btn" type="button" data-exp="priests">Export priest rows</button>' +
-                '<button class="dio-reports-export__btn" type="button" data-exp="users">Export user rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="bookings">Preview service booking rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="parishes">Preview parish rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="priests">Preview priest rows</button>' +
+                '<button class="dio-reports-export__btn" type="button" data-exp="users">Preview user rows</button>' +
               '</div>' +
             '</div>' +
-            '<div class="dio-reports-export__meta" data-exp-meta>Downloads CSV that opens in Excel.</div>';
+            '<div class="dio-reports-export__meta" data-exp-meta>Choose an export to preview the data before downloading.</div>' +
+            '<div class="dio-reports-export__preview" data-exp-preview></div>';
 
           if (host.firstChild) host.insertBefore(wrap, host.firstChild);
           else host.appendChild(wrap);
 
           function setBusy(btn, busy) {
             btn.disabled = !!busy;
-            btn.textContent = busy ? "Exporting…" : btn.getAttribute("data-label");
+            btn.textContent = busy ? "Loading..." : btn.getAttribute("data-label");
+          }
+          var previewRows = [];
+          var previewName = "";
+          var previewEl = wrap.querySelector("[data-exp-preview]");
+          function escHtml(v) {
+            return String(v == null ? "" : v).replace(/[<>&"']/g, function (ch) {
+              return {"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;"}[ch];
+            });
+          }
+          function exportConfig(kind) {
+            if (kind === "bookings") return { title:"Service booking rows", fileName:"service-bookings.csv", table:"diocese_service_bookings", select:"id,reference_number,parish_id,parish_name,client_name,service_name,booking_status,booking_date,booking_time,cost,payment_method,payment_amount,payment_fee,payment_total,booked_by,created_at,updated_at", order:"created_at" };
+            if (kind === "parishes") return { title:"Parish rows", fileName:"parishes.csv", table:"parishes", select:"id,parish_name,address,city,province,contact_number,email,created_at,updated_at", order:"parish_name" };
+            if (kind === "priests") return { title:"Priest rows", fileName:"parish-priests.csv", table:"parish_priests", select:"id,parish_id,parish_name,full_name,role,ministry,birthdate,civil_status,profile_picture_url,created_at,updated_at", order:"created_at" };
+            return { title:"User rows", fileName:"registered-users.csv", table:"registered_users", select:"id,parish_id,parish_name,full_name,email,phone_number,birthdate,address,civil_status,profile_picture_url,created_at,updated_at", order:"created_at" };
+          }
+          function clearPreview() {
+            previewRows = [];
+            previewName = "";
+            if (previewEl) {
+              previewEl.classList.remove("is-visible");
+              previewEl.innerHTML = "";
+            }
+            var meta = wrap.querySelector("[data-exp-meta]");
+            if (meta) meta.textContent = "Choose an export to preview the data before downloading.";
+          }
+          function renderPreview(title, fileName, rows) {
+            previewRows = Array.isArray(rows) ? rows : [];
+            previewName = fileName;
+            var keys = Object.keys((previewRows && previewRows[0]) || {}).slice(0, 10);
+            var sample = previewRows.slice(0, 20);
+            var table = "";
+            if (sample.length && keys.length) {
+              table =
+                '<div class="dio-reports-export__preview-table"><table><thead><tr>' +
+                keys.map(function (k) { return '<th>' + escHtml(k) + '</th>'; }).join("") +
+                '</tr></thead><tbody>' +
+                sample.map(function (row) {
+                  return '<tr>' + keys.map(function (k) { return '<td title="' + escHtml(row[k]) + '">' + escHtml(row[k]) + '</td>'; }).join("") + '</tr>';
+                }).join("") +
+                '</tbody></table></div>';
+            } else {
+              table = '<div class="dio-reports-export__meta" style="padding:12px">No rows found for this export.</div>';
+            }
+            previewEl.innerHTML =
+              '<div class="dio-reports-export__preview-head">' +
+                '<div class="dio-reports-export__preview-title">' +
+                  '<strong>' + escHtml(title) + '</strong>' +
+                  '<span>' + escHtml(previewRows.length) + ' rows ready. Showing first ' + escHtml(sample.length) + ' rows.</span>' +
+                '</div>' +
+                '<div class="dio-reports-export__preview-actions">' +
+                  '<button class="dio-reports-export__btn" type="button" data-exp-download>Download CSV</button>' +
+                  '<button class="dio-reports-export__btn" type="button" data-exp-cancel>Cancel</button>' +
+                '</div>' +
+              '</div>' +
+              table;
+            previewEl.classList.add("is-visible");
+            var meta = wrap.querySelector("[data-exp-meta]");
+            if (meta) meta.textContent = "Review the preview, then download or cancel.";
           }
           var btns = wrap.querySelectorAll("[data-exp]");
           for (var i = 0; i < btns.length; i++) {
@@ -7053,24 +8549,25 @@
           }
 
           wrap.addEventListener("click", function (e) {
+            var downloadBtn = e.target && e.target.closest && e.target.closest("[data-exp-download]");
+            if (downloadBtn) {
+              downloadCsv(previewName || "export.csv", previewRows);
+              return;
+            }
+            var cancelBtn = e.target && e.target.closest && e.target.closest("[data-exp-cancel]");
+            if (cancelBtn) {
+              clearPreview();
+              return;
+            }
             var btn = e.target && e.target.closest && e.target.closest("[data-exp]");
             if (!btn) return;
             var kind = btn.getAttribute("data-exp");
+            var cfg = exportConfig(kind);
             setBusy(btn, true);
-            var p;
-            if (kind === "bookings") {
-              p = fetchAll("diocese_service_bookings", "id,reference_number,parish_id,parish_name,client_name,service_name,booking_status,booking_date,booking_time,cost,payment_method,payment_amount,payment_fee,payment_total,booked_by,created_at,updated_at", "created_at")
-                .then(function (rows) { downloadCsv("service-bookings.csv", rows); });
-            } else if (kind === "parishes") {
-              p = fetchAll("parishes", "id,parish_name,address,city,province,contact_number,email,created_at,updated_at", "parish_name")
-                .then(function (rows) { downloadCsv("parishes.csv", rows); });
-            } else if (kind === "priests") {
-              p = fetchAll("parish_priests", "id,parish_id,parish_name,full_name,role,ministry,birthdate,civil_status,profile_picture_url,created_at,updated_at", "created_at")
-                .then(function (rows) { downloadCsv("parish-priests.csv", rows); });
-            } else {
-              p = fetchAll("registered_users", "id,parish_id,parish_name,full_name,email,phone_number,birthdate,address,civil_status,profile_picture_url,created_at,updated_at", "created_at")
-                .then(function (rows) { downloadCsv("registered-users.csv", rows); });
-            }
+            clearPreview();
+            var p = fetchAll(cfg.table, cfg.select, cfg.order).then(function (rows) {
+              renderPreview(cfg.title, cfg.fileName, rows);
+            });
             Promise.resolve(p).catch(function (err) {
               window.alert("Export failed: " + (err && err.message ? err.message : err));
             }).finally(function () {
@@ -7181,45 +8678,58 @@
         if (window.__dioOfflineNameSuggest) return;
         window.__dioOfflineNameSuggest = true;
 
-        var CACHE_KEY = "dio-name-cache:v1";
-        var MAX_NAMES = 1500;
+        var CACHE_KEY = "dio-name-cache:v2"; // store objects for autofill
+        var MAX_ROWS = 1800;
 
         function loadCache() {
           try { var raw = localStorage.getItem(CACHE_KEY); var arr = raw ? JSON.parse(raw) : []; return Array.isArray(arr) ? arr : []; }
           catch (e) { return []; }
         }
         function saveCache(arr) {
-          try { if (!Array.isArray(arr)) return; if (arr.length > MAX_NAMES) arr = arr.slice(0, MAX_NAMES); localStorage.setItem(CACHE_KEY, JSON.stringify(arr)); }
+          try { if (!Array.isArray(arr)) return; if (arr.length > MAX_ROWS) arr = arr.slice(0, MAX_ROWS); localStorage.setItem(CACHE_KEY, JSON.stringify(arr)); }
           catch (e) {}
         }
         function norm(s){ return String(s || "").replace(/\s+/g," ").trim(); }
         function normKey(s){ return norm(s).toLowerCase(); }
-        function addNames(names){
-          names = Array.isArray(names) ? names : [];
-          if (!names.length) return;
+        function toRow(r){
+          r = r || {};
+          var full = r.full_name || r.client_name || r.user_full_name || r.name || null;
+          if (!full) {
+            full = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(" ");
+            if (!full) full = [r.client_first_name, r.client_middle_name, r.client_last_name].filter(Boolean).join(" ");
+          }
+          full = norm(full);
+          if (!full) return null;
+          return {
+            name: full,
+            mother_name: norm(r.mother_name || ""),
+            father_name: norm(r.father_name || ""),
+            church: norm(r.church || r.parish_name || ""),
+            born_on: r.born_on || r.requester_birthday || "",
+            service_date: r.service_date || r.booking_date || "",
+            register_no: r.register_no || "",
+            page_no: r.page_no || "",
+            line_no: r.line_no || ""
+          };
+        }
+        function addRows(rows){
+          rows = Array.isArray(rows) ? rows : [];
+          if (!rows.length) return;
           var cur = loadCache();
           var seen = {};
-          for (var i=0;i<cur.length;i++) seen[normKey(cur[i])] = true;
-          for (var j=0;j<names.length;j++){
-            var n = norm(names[j]); if (!n) continue;
-            var k = normKey(n); if (seen[k]) continue;
-            cur.unshift(n); seen[k] = true;
+          for (var i=0;i<cur.length;i++){
+            var k0 = cur[i] && cur[i].name ? normKey(cur[i].name) : "";
+            if (k0) seen[k0] = true;
+          }
+          for (var j=0;j<rows.length;j++){
+            var rr = toRow(rows[j]);
+            if (!rr) continue;
+            var k = normKey(rr.name);
+            if (seen[k]) continue;
+            cur.unshift(rr);
+            seen[k] = true;
           }
           saveCache(cur);
-        }
-        function extractNames(rows){
-          rows = Array.isArray(rows) ? rows : [];
-          var out = [];
-          for (var i=0;i<rows.length;i++){
-            var r = rows[i] || {};
-            var full = r.full_name || r.client_name || r.user_full_name || r.name || null;
-            if (!full) {
-              full = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(" ");
-              if (!full) full = [r.client_first_name, r.client_middle_name, r.client_last_name].filter(Boolean).join(" ");
-            }
-            if (full) out.push(full);
-          }
-          return out;
         }
 
         // Cache from network responses so offline can suggest later.
@@ -7229,6 +8739,22 @@
           var _fetch = window.fetch;
           window.fetch = function(input, init){
             var url = (typeof input === "string") ? input : (input && input.url) || "";
+            // Cache from request body for writes (works offline / even if response has no JSON).
+            try{
+              var method = (init && init.method) ? String(init.method).toUpperCase() : "GET";
+              var isWrite = method === "POST" || method === "PATCH" || method === "PUT";
+              if (isWrite && init && typeof init.body === "string") {
+                var isWriteInteresting =
+                  url.indexOf("/rest/v1/diocese_archive_records") !== -1 ||
+                  url.indexOf("/rest/v1/diocese_service_bookings") !== -1;
+                if (isWriteInteresting) {
+                  var parsed = null;
+                  try { parsed = JSON.parse(init.body); } catch(e0) { parsed = null; }
+                  var rows0 = Array.isArray(parsed) ? parsed : (parsed ? [parsed] : []);
+                  if (rows0.length) addRows(rows0);
+                }
+              }
+            } catch(e1) {}
             var p = _fetch.apply(this, arguments);
             try{
               var isInteresting =
@@ -7244,7 +8770,7 @@
                     var c = res.clone();
                     c.json().then(function(data){
                       var rows = Array.isArray(data) ? data : (data ? [data] : []);
-                      addNames(extractNames(rows));
+                      addRows(rows);
                     }).catch(function(){});
                   } catch(e2){}
                 });
@@ -7275,8 +8801,9 @@
           var arr = loadCache();
           var scored = [];
           for (var i=0;i<arr.length;i++){
-            var s = score(query, arr[i]);
-            if (s >= 0) scored.push({ name: arr[i], s: s });
+            var nm = arr[i] && arr[i].name ? arr[i].name : "";
+            var s = score(query, nm);
+            if (s >= 0) scored.push({ row: arr[i], name: nm, s: s });
           }
           scored.sort(function(a,b){ return b.s - a.s; });
           return scored.slice(0, limit);
@@ -7320,7 +8847,9 @@
             var hits = bestMatches(q, 8);
             if (!hits.length) { hide(); return; }
             list.innerHTML = hits.map(function(h){
-              return '<div class="dio-name-suggest__item" data-name="'+String(h.name).replace(/"/g,"&quot;")+'"><span>'+h.name+'</span><small>offline</small></div>';
+              var payload = "";
+              try { payload = encodeURIComponent(JSON.stringify(h.row || { name: h.name })); } catch(e){}
+              return '<div class="dio-name-suggest__item" data-row="'+payload+'"><span>'+h.name+'</span><small>offline</small></div>';
             }).join("");
             list.style.display = "block";
           }
@@ -7328,11 +8857,36 @@
           el.addEventListener("input", render);
           el.addEventListener("focus", render);
           el.addEventListener("blur", function(){ setTimeout(hide, 120); });
+          function fillOtherFields(row){
+            if (!row) return;
+            var scope = el.closest(".certificate-booking-modal__dialog") || el.closest(".certificate-booking-modal") || el.closest("form") || document;
+            function setVal(sel, val){
+              if (!val) return;
+              var f = scope.querySelector(sel);
+              if (!f) return;
+              try { f.value = val; } catch(e){}
+              try { f.dispatchEvent(new Event("input", { bubbles: true })); } catch(e2){}
+              try { f.dispatchEvent(new Event("change", { bubbles: true })); } catch(e3){}
+            }
+            // Common certificate fields (best-effort).
+            setVal("[name='mother_name'], [id*='mother'], [aria-label*='Mother'], [placeholder*='Mother']", row.mother_name);
+            setVal("[name='father_name'], [id*='father'], [aria-label*='Father'], [placeholder*='Father']", row.father_name);
+            setVal("[name='church'], [id*='church'], [name='parish_name']", row.church);
+            setVal("[name='born_on'], [name='birthdate'], [aria-label*='Birthday']", row.born_on);
+            setVal("[name='service_date'], [name='booking_date'], [aria-label*='Booking Date']", row.service_date);
+            setVal("[name='register_no'], [id*='register'], [placeholder*='Register']", row.register_no);
+            setVal("[name='page_no'], [id*='page'], [placeholder*='Page']", row.page_no);
+            setVal("[name='line_no'], [id*='line'], [placeholder*='Line']", row.line_no);
+          }
+
           list.addEventListener("mousedown", function(e){
-            var item = e.target && e.target.closest && e.target.closest("[data-name]");
+            var item = e.target && e.target.closest && e.target.closest("[data-row]");
             if (!item) return;
-            el.value = item.getAttribute("data-name") || "";
+            var row = null;
+            try { row = JSON.parse(decodeURIComponent(item.getAttribute("data-row") || "")); } catch(e0){ row = null; }
+            el.value = (row && row.name) ? row.name : (el.value || "");
             try { el.dispatchEvent(new Event("input", { bubbles: true })); } catch(e2){}
+            try { fillOtherFields(row); } catch(e3){}
             hide();
           });
         }
@@ -7751,6 +9305,3 @@
     </script>
   </body>
 </html>
-
-
-
