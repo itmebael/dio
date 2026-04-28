@@ -100,6 +100,34 @@
     <link rel="stylesheet" crossorigin href="/dist/assets/index-yReDnWMe.css">
     <link rel="stylesheet" href="/dist/assets/sidebar-brand-responsive.css?v=notification-dark-1">
     <style id="clergy-roster-cards">
+      @keyframes dioClergyCardIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes dioPriestModalIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes dioPriestDialogIn {
+        from {
+          opacity: 0;
+          transform: translateY(22px) scale(0.94);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
       .detail-list--stack .detail-list__item--stack > .status-badge,
       .dio-clergy-roster .detail-list__item--stack > .status-badge {
         display: none !important;
@@ -107,7 +135,7 @@
       .dio-clergy-roster .detail-list--stack {
         display: grid !important;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 16px !important;
+        gap: 18px !important;
       }
       .dio-clergy-roster .detail-list__item--stack {
         position: relative;
@@ -117,28 +145,55 @@
         align-items: center;
         overflow: hidden;
         border: 1px solid rgba(15, 23, 42, 0.08) !important;
-        border-radius: 18px !important;
+        border-radius: 20px !important;
         background:
-          radial-gradient(circle at 100% 0%, rgba(37, 99, 235, .12), transparent 34%),
-          linear-gradient(135deg, rgba(255,255,255,.96), rgba(248,250,252,.88)) !important;
-        box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10);
+          radial-gradient(circle at 100% 0%, rgba(37, 99, 235, .14), transparent 38%),
+          linear-gradient(135deg, rgba(255,255,255,.97), rgba(248,250,252,.9)) !important;
+        box-shadow:
+          0 18px 44px rgba(15, 23, 42, 0.10),
+          0 0 0 1px rgba(255, 255, 255, 0.6) inset;
         cursor: pointer;
-        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+          transform 0.22s cubic-bezier(0.34, 1.3, 0.64, 1),
+          border-color 0.2s ease,
+          box-shadow 0.22s ease,
+          background 0.2s ease;
+        will-change: transform;
+        animation: dioClergyCardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
       }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(1) { animation-delay: 0.03s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(2) { animation-delay: 0.07s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(3) { animation-delay: 0.11s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(4) { animation-delay: 0.15s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(5) { animation-delay: 0.19s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(6) { animation-delay: 0.23s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(7) { animation-delay: 0.27s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(8) { animation-delay: 0.31s; }
+      .dio-clergy-roster .detail-list__item--stack:nth-child(n+9) { animation-delay: 0.35s; }
       .dio-clergy-roster .detail-list__item--stack:hover {
-        transform: translateY(-3px);
-        border-color: rgba(37, 99, 235, .24) !important;
-        box-shadow: 0 24px 54px rgba(15, 23, 42, 0.15);
+        transform: translateY(-6px) scale(1.015);
+        border-color: rgba(37, 99, 235, 0.35) !important;
+        box-shadow:
+          0 28px 56px rgba(37, 99, 235, 0.18),
+          0 18px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 4px rgba(37, 99, 235, 0.12);
+      }
+      .dio-clergy-roster .detail-list__item--stack:active {
+        transform: translateY(-2px) scale(0.992);
+        transition-duration: 0.08s;
       }
       .dio-clergy-roster .detail-list__item--stack:focus-visible {
         outline: 3px solid #1d4ed8;
         outline-offset: 3px;
       }
+      /* Grid layout: no divider lines between cards */
       .dio-clergy-roster .detail-list__item--stack + .detail-list__item--stack {
-        border-top: 1px solid rgba(22, 53, 84, 0.14) !important;
+        border-top: none !important;
       }
       .dio-clergy-roster .detail-list__item--stack::before {
-        content: "FR";
+        content: attr(data-dio-priest-initials);
         position: absolute;
         left: 20px;
         top: 50%;
@@ -209,21 +264,37 @@
         color: #bbf7d0 !important;
         background: rgba(22, 101, 52, .34);
       }
+      .dio-clergy-roster .detail-list__item--stack:not([data-dio-priest-initials])::before {
+        content: "PR";
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .dio-clergy-roster .detail-list__item--stack {
+          animation: none !important;
+        }
+        .dio-priest-modal,
+        .dio-priest-modal__dialog {
+          animation: none !important;
+        }
+      }
       .dio-priest-modal {
         position: fixed;
         inset: 0;
         z-index: 2147483638;
-        padding: 18px;
+        padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
         display: grid;
         place-items: center;
-        background: rgba(15, 23, 42, .50);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        align-content: center;
+        background: rgba(15, 23, 42, .52);
+        backdrop-filter: blur(16px) saturate(1.2);
+        -webkit-backdrop-filter: blur(16px) saturate(1.2);
+        animation: dioPriestModalIn 0.28s ease forwards;
       }
       .dio-priest-modal__dialog {
         width: min(640px, 100%);
         max-height: min(720px, calc(100vh - 36px));
+        max-height: min(720px, calc(100dvh - 36px));
         overflow: auto;
+        -webkit-overflow-scrolling: touch;
         border: 1px solid rgba(255, 255, 255, .72);
         border-radius: 22px;
         background:
@@ -231,6 +302,7 @@
           #ffffff;
         color: #0f172a;
         box-shadow: 0 34px 100px rgba(15, 23, 42, .38);
+        animation: dioPriestDialogIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) backwards;
       }
       .dio-priest-modal__head {
         display: grid;
@@ -333,26 +405,71 @@
       html[data-theme="dark"] .dio-priest-modal__field span {
         color: #94a3b8;
       }
+      @media (max-width: 900px) {
+        .dio-clergy-roster .detail-list--stack {
+          grid-template-columns: 1fr !important;
+          gap: 14px !important;
+        }
+      }
       @media (max-width: 560px) {
         .dio-clergy-roster .detail-list__item--stack {
-          min-height: 150px;
-          padding-bottom: 40px !important;
+          min-height: 148px;
+          padding: 18px !important;
+          padding-bottom: 42px !important;
+          border-radius: 18px !important;
         }
         .dio-clergy-roster .detail-list__meta {
           padding-right: 0;
+          margin-left: 68px !important;
+        }
+        .dio-clergy-roster .detail-list__item--stack::before {
+          width: 48px;
+          height: 48px;
+          left: 16px;
+          font-size: 13px;
         }
         .dio-clergy-roster .detail-list__item--stack::after {
-          left: 94px;
-          right: auto;
-          bottom: 18px;
+          left: 84px;
+          right: 16px;
+          bottom: 16px;
+          font-size: 12px;
+          opacity: 1;
+          color: #2563eb;
+          font-weight: 900;
+        }
+        .dio-clergy-roster .detail-list__item--stack:hover {
+          transform: translateY(-4px) scale(1.01);
+        }
+        .dio-priest-modal {
+          padding: 0;
+          place-items: stretch;
+          align-content: stretch;
+        }
+        .dio-priest-modal__dialog {
+          width: 100%;
+          max-height: none;
+          min-height: 100%;
+          min-height: 100dvh;
+          border-radius: 0;
+          border-left: none;
+          border-right: none;
+          box-shadow: none;
         }
         .dio-priest-modal__body {
           grid-template-columns: 1fr;
+          padding-bottom: max(22px, env(safe-area-inset-bottom));
         }
         .dio-priest-modal__head {
           grid-template-columns: 48px minmax(0, 1fr) auto;
+          padding-top: max(22px, env(safe-area-inset-top));
+          padding-left: max(22px, env(safe-area-inset-left));
+          padding-right: max(22px, env(safe-area-inset-right));
         }
         .dio-priest-modal__avatar {
+          width: 48px;
+          height: 48px;
+        }
+        .dio-priest-modal__close {
           width: 48px;
           height: 48px;
         }
@@ -405,6 +522,12 @@
         function valueOrEmpty(value) {
           return value == null || String(value).trim() === "" ? "Not saved" : String(value);
         }
+        function initialsFromName(name) {
+          var parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+          if (!parts.length) return "PR";
+          if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+          return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
         function field(label, value, wide) {
           return '<div class="dio-priest-modal__field' + (wide ? ' dio-priest-modal__field--wide' : '') + '">' +
             '<span>' + escapeHtml(label) + '</span>' +
@@ -417,10 +540,11 @@
           var role = priest.role || fallback.role || "Parish Priest";
           var modal = document.createElement("div");
           modal.className = "dio-priest-modal";
+          var av = initialsFromName(name);
           modal.innerHTML =
             '<section class="dio-priest-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="dio-priest-modal-title">' +
               '<div class="dio-priest-modal__head">' +
-                '<div class="dio-priest-modal__avatar" aria-hidden="true">FR</div>' +
+                '<div class="dio-priest-modal__avatar" aria-hidden="true">' + escapeHtml(av) + '</div>' +
                 '<div><h4 id="dio-priest-modal-title">' + escapeHtml(name) + '</h4><span>' + escapeHtml(role) + '</span></div>' +
                 '<button type="button" class="dio-priest-modal__close" aria-label="Close priest details">&times;</button>' +
               '</div>' +
@@ -436,14 +560,22 @@
                 field("Last Updated", formatDate(priest.updated_at), false) +
               '</div>' +
             '</section>';
+          var prevOverflow = "";
           function close() {
             if (modal && modal.parentElement) modal.parentElement.removeChild(modal);
             document.removeEventListener("keydown", onKey);
+            try {
+              document.body.style.overflow = prevOverflow || "";
+            } catch (e) {}
           }
           function onKey(e) { if (e.key === "Escape") close(); }
-          modal.addEventListener("mousedown", function (e) { if (e.target === modal) close(); });
+          modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
           modal.querySelector(".dio-priest-modal__close").addEventListener("click", close);
           document.addEventListener("keydown", onKey);
+          try {
+            prevOverflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+          } catch (e) {}
           document.body.appendChild(modal);
           var closeBtn = modal.querySelector(".dio-priest-modal__close");
           if (closeBtn) closeBtn.focus();
@@ -465,6 +597,7 @@
           var roleEl = card.querySelector(".detail-list__meta span");
           var name = strong ? (strong.textContent || "").trim() : "";
           var roleText = roleEl ? (roleEl.textContent || "").trim() : "";
+          card.setAttribute("data-dio-priest-initials", initialsFromName(name));
           card.setAttribute("aria-label", "View priest details for " + (name || "this priest"));
           function open() {
             var fallback = { name: name, role: roleText };
@@ -514,6 +647,10 @@
         display: none;
       }
       .workspace.dio-user-mgmt-open .overview-shell {
+        display: none !important;
+      }
+      /* Diocese/parish main workspace: hide the entire scene so User Management is not stacked on the dashboard. */
+      .workspace.dio-user-mgmt-open > .scene {
         display: none !important;
       }
       .workspace.dio-user-mgmt-open .dio-user-mgmt-screen {
@@ -819,7 +956,14 @@
           return document.querySelector(".workspace") || document.getElementById("root");
         }
         function findNav() {
-          return document.querySelector(".sidebar__nav") || document.querySelector("nav") || null;
+          /* Never use document.querySelector("nav") — the dashboard can contain other <nav> regions in the main pane. */
+          var list = document.querySelectorAll(".sidebar .sidebar__nav");
+          if (!list || !list.length) return null;
+          var i;
+          for (i = 0; i < list.length; i++) {
+            if (list[i].getAttribute("aria-label") === "Main navigation") return list[i];
+          }
+          return list[0];
         }
         function initials(name) {
           return String(name || "U").split(/\s+/).filter(Boolean).map(function (p) { return p.charAt(0); }).join("").slice(0, 2).toUpperCase() || "U";
@@ -992,7 +1136,14 @@
           var r = role();
           if (!roleCanUse(r)) return;
           var nav = findNav();
-          if (!nav || nav.querySelector(".dio-user-mgmt-nav")) return;
+          if (!nav) return;
+          var misplaced = document.querySelectorAll(".dio-user-mgmt-nav");
+          for (var x = 0; x < misplaced.length; x++) {
+            if (misplaced[x].parentElement !== nav) {
+              try { misplaced[x].remove(); } catch (e) {}
+            }
+          }
+          if (nav.querySelector(".dio-user-mgmt-nav")) return;
           var btn = document.createElement("button");
           btn.type = "button";
           btn.className = "nav-item dio-user-mgmt-nav";
@@ -1044,7 +1195,10 @@
         function tick() { try { mount(); } catch (e) {} }
         if (document.readyState === "complete" || document.readyState === "interactive") setTimeout(tick, 900);
         else document.addEventListener("DOMContentLoaded", function () { setTimeout(tick, 900); });
-        window.addEventListener("hashchange", function () { setTimeout(tick, 700); });
+        window.addEventListener("hashchange", function () {
+          closeScreen();
+          setTimeout(tick, 700);
+        });
         setInterval(tick, 1800);
       })();
     </script>
